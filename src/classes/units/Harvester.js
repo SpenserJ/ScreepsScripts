@@ -19,10 +19,33 @@ export default class Harvester extends BaseUnit {
   run() {
     if (super.run() === false) { return; }
     const creep = this.creep;
+
+    // Determine which source to use
+    if (!creep.memory.sourceId) {
+      const sources = creep.room.find(FIND_SOURCES)
+        .reduce((acc, next) => {
+          acc[next.id] = next;
+          return acc;
+        }, {});
+      const sourceAssignments = creep.room
+        .find(FIND_MY_CREEPS, {
+          filter: creepFilter => (
+            creepFilter.memory.role === this.constructor.name &&
+            !!creepFilter.memory.sourceId
+          ),
+        })
+        .reduce((acc, next) => {
+          acc[next.memory.sourceId]++
+          return acc;
+        }, Object.keys(sources).reduce((acc, next) => { acc[next] = 0; return acc; }, {}));
+      creep.memory.sourceId = Object.entries(sourceAssignments)
+        .sort(([, countA], [, countB]) => countA - countB)[0][0];
+    }
+
     if(creep.carry.energy < creep.carryCapacity) {
-      var sources = creep.room.find(FIND_SOURCES);
-      if(creep.harvest(sources[0]) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(sources[0]);
+      var source = Game.getObjectById(creep.memory.sourceId);
+      if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(source);
       }
     }
     else {
