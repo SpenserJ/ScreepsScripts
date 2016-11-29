@@ -1,9 +1,8 @@
 export const getTotalEnergy = () => Object.values(Game.rooms)[0].energyAvailable;
 export const getEnergyCapacity = () => Object.values(Game.rooms)[0].energyCapacityAvailable;
 
-const creepBodyPartCosts = { [MOVE]: 50, [WORK]: 100, [CARRY]: 50, [ATTACK]: 80, [RANGED_ATTACK]: 150, [HEAL]: 250, [CLAIM]: 600, [TOUGH]: 10 };
 export const calculateCreepCost = body =>
-  body.reduce((acc, part) => (acc + creepBodyPartCosts[part]), 0);
+  body.reduce((acc, part) => (acc + BODYPART_COST[part]), 0);
 
 export const structuresNeedingRepair = () => findStructures()
   .filter(structure => ((structure.hits / structure.hitsMax) < 1));
