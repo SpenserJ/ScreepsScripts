@@ -20,13 +20,12 @@ export const track = () => {
   const stats = Memory.statistics;
   updateStatisticOnTick('energyTotal', Utilities.getTotalEnergy());
   updateStatisticOnTick('energyCapacity', Utilities.getEnergyCapacity());
-  updateStatisticOnTick('energyGeneration', [[]], 50);
-  updateStatisticOnTick('energyConsumption', [[]], 50);
+  updateStatisticOnTick('energyUsage', [[]], 50);
 };
 
 export const report = () => {
   const stats = Memory.statistics;
   console.log(`Average Energy: ${getStatAverage('energyTotal')}/${getStatAverage('energyCapacity')}`);
-  const energyChange = getStatAverage('energyGeneration') - getStatAverage('energyConsumption');
+  const energyChange = getStatAverage('energyUsage');
   console.log(`Average Energy Change: ${energyChange > 0 ? '+' : ''}${Math.round(energyChange * 100) / 100}`);
 };

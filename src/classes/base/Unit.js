@@ -32,7 +32,7 @@ export default class BaseUnit {
         { role: ClassType.name, originalRole: ClassType.name }
       );
       const creepCost = calculateCreepCost(ClassType.decideCreepParts(ClassType))
-      appendToTickStat('energyConsumption', creepCost);
+      appendToTickStat('energyUsage', creepCost);
       console.log(`Spawning new ${ClassType.name} with ${creepCost} energy: ${newName}`);
     }
 
@@ -51,7 +51,7 @@ export default class BaseUnit {
         creep.moveTo(target);
       } else {
         // TODO: This doesn't account for almost-full containers
-        appendToTickStat('energyGeneration', energy);
+        appendToTickStat('energyUsage', energy);
       }
     }
 
@@ -65,7 +65,7 @@ export default class BaseUnit {
         creep.moveTo(target);
       } else {
         // TODO: This doesn't account for almost-empty containers
-        appendToTickStat('energyConsumption', energy);
+        appendToTickStat('energyUsage', -energy);
       }
     }
 
