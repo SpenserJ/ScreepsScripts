@@ -23,10 +23,7 @@ export default class Harvester extends BaseUnit {
     // Determine which source to use
     if (!creep.memory.sourceId) {
       const sources = creep.room.find(FIND_SOURCES)
-        .reduce((acc, next) => {
-          acc[next.id] = next;
-          return acc;
-        }, {});
+        .reduce((acc, next) => { acc[next.id] = next; return acc; }, {});
       const sourceAssignments = creep.room
         .find(FIND_MY_CREEPS, {
           filter: creepFilter => (

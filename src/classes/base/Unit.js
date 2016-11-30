@@ -3,6 +3,20 @@ import _ from 'lodash';
 import { calculateCreepCost } from '../../utilities';
 import { appendToTickStat } from '../../statistics';
 
+const findContainersNearSpawn = room => {
+  const spawn = Object.values(Game.spawns)
+    .filter(s => s.roomName = room.name)[0];
+  return room
+    .find(FIND_STRUCTURES, {
+      filter: structure => (
+        structure.structureType == STRUCTURE_CONTAINER &&
+        _.sum(structure.store) < (structure.storeCapacity - 200) &&
+        Math.abs(structure.pos.x - spawn.pos.x) <= 1 &&
+        Math.abs(structure.pos.y - spawn.pos.y) <= 1
+      ),
+    });
+}
+
 export default class BaseUnit {
     static determineMinimumUnits = 0;
     static autospawnPriority = 0;
@@ -55,12 +69,7 @@ export default class BaseUnit {
     run() {
       const creep = this.creep;
       if (creep.ticksToLive < 350) {
-        const containers = creep.room.find(FIND_STRUCTURES, {
-          filter: structure => (
-            structure.structureType == STRUCTURE_CONTAINER &&
-            _.sum(structure.store) < (structure.storeCapacity - 200)
-          ),
-        });
+        const containers = findContainersNearSpawn(creep.room);
         if (creep.ticksToLive % 5 === 0) {
           console.log(`${creep.name} (${this.constructor.name}) is going to die in ${creep.ticksToLive} ticks`);
         }
