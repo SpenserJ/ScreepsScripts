@@ -39,7 +39,13 @@ export default class Harvester extends BaseUnit {
         .sort(([, countA], [, countB]) => countA - countB)[0][0];
     }
 
-    if(creep.carry.energy < creep.carryCapacity) {
+    if (creep.memory.task !== 'deposit' && creep.carry.energy === creep.carryCapacity) {
+      creep.memory.task = 'deposit';
+    } else if (creep.carry.energy === 0) {
+      creep.memory.task = 'harvest';
+    }
+
+    if (creep.memory.task === 'harvest') {
       var source = Game.getObjectById(creep.memory.sourceId);
       if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
         creep.moveTo(source);
