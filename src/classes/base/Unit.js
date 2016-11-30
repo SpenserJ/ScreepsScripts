@@ -84,8 +84,13 @@ export default class BaseUnit {
           if (deathTarget.pos.roomName === creep.pos.roomName &&
               deathTarget.pos.x === creep.pos.x &&
               deathTarget.pos.y === creep.pos.y) {
-            console.log(`Recycling ${creep.name} (${this.constructor.name})`)
-            Game.spawns['Spawn1'].recycleCreep(creep);
+            // TODO: This should deposit all resources!
+            if (creep.carry[RESOURCE_ENERGY] > 0) {
+              this.storeEnergy(deathTarget);
+            } else {
+              console.log(`Recycling ${creep.name} (${this.constructor.name})`)
+              Game.spawns['Spawn1'].recycleCreep(creep);
+            }
           } else {
             const atDeathTarget = creep.room.lookAt(deathTarget.pos.x, deathTarget.pos.y)
               .filter(el => el.type === 'creep');
