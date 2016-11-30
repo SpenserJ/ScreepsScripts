@@ -58,7 +58,10 @@ export default class BaseUnit {
     withdrawEnergy(target) {
       const creep = this.creep;
       const energy = creep.carryCapacity - _.sum(Object.values(creep.carry));
-      if (target.transferEnergy(creep) == ERR_NOT_IN_RANGE) {
+      const moveCloser = target.transferEnergy
+        ? target.transferEnergy(creep)
+        : creep.withdraw(target, RESOURCE_ENERGY);
+      if (moveCloser == ERR_NOT_IN_RANGE) {
         creep.moveTo(target);
       } else {
         // TODO: This doesn't account for almost-empty containers
@@ -68,7 +71,7 @@ export default class BaseUnit {
 
     run() {
       const creep = this.creep;
-      if (creep.ticksToLive < 350) {
+      if (creep.ticksToLive < 350 || creep.memory.idleTicks > 25) {
         const containers = findContainersNearSpawn(creep.room);
         if (creep.ticksToLive % 5 === 0) {
           console.log(`${creep.name} (${this.constructor.name}) is going to die in ${creep.ticksToLive} ticks`);
@@ -76,7 +79,6 @@ export default class BaseUnit {
         if (containers.length !== 0) {
           if (!creep.memory.deathTarget) {
             creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
-              console.log('Select death target', creep.memory.deathTarget);
           }
           let deathTarget = Game.getObjectById(creep.memory.deathTarget);
           if (deathTarget.pos.roomName === creep.pos.roomName &&
@@ -89,7 +91,6 @@ export default class BaseUnit {
               .filter(el => el.type === 'creep');
             if (atDeathTarget.length > 0) {
               creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
-              console.log('Redirect to new death target', creep.memory.deathTarget, Math.floor(Math.random() * containers.length));
             } else {
               creep.moveTo(deathTarget);
             }

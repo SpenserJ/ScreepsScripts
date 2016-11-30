@@ -3,12 +3,14 @@ import * as Utilities from '../../utilities';
 
 export default class Upgrader extends BaseUnit {
   static minimumUnits = () => {
+    if (Utilities.getTotalEnergyForSpawn() < 300) { return 0; }
     if (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity() > 0.8) { return 2; }
     return 1;
   };
   static autospawnPriority = 1;
 
   run() {
+    if (super.run() === false) { return; }
     const creep = this.creep;
     if (creep.carry.energy == 0) {
       const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity())

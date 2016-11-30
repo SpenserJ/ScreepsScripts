@@ -4,16 +4,16 @@ import * as Utilities from '../../utilities';
 export default class Harvester extends BaseUnit {
   static minimumUnits = () => {
     const energyPercent = 1 - (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity()) + .01;
-    return 5;
-    return Math.ceil(5 * energyPercent);
+    return Math.ceil(6 * energyPercent);
   };
   static autospawnPriority = 100;
 
   static decideCreepParts = (ClassType) => {
-    if (Object.values(Game.creeps).length < 3) {
-      return [WORK, CARRY, MOVE];
+    const optimal = [WORK, WORK, WORK, CARRY, MOVE, MOVE];
+    if (Utilities.getTotalEnergyForSpawn() >= Utilities.calculateCreepCost(optimal)) {
+      return optimal;
     }
-    return [WORK, WORK, WORK, CARRY, MOVE, MOVE];
+    return [WORK, CARRY, MOVE];
   }
 
   run() {

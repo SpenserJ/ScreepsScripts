@@ -11,12 +11,13 @@ const getEnergyContainers = () => Utilities.findStructures()
 
 export default class TransferEnergy extends BaseUnit {
   static minimumUnits = () => (
-    Utilities.getTotalEnergy() < Utilities.getEnergyCapacity() &&
+    (Utilities.getTotalEnergyForSpawn() / Utilities.getEnergyCapacityForSpawn()) < .8 &&
     getEnergyContainers().length
   ) || 0;
   static autospawnPriority = 10;
 
   run() {
+    if (super.run() === false) { return; }
     const creep = this.creep;
     if (creep.carry[RESOURCE_ENERGY] > 0) {
       var targets = creep.room.find(FIND_STRUCTURES, {
@@ -25,15 +26,14 @@ export default class TransferEnergy extends BaseUnit {
             structure.energy < structure.energyCapacity;
         }
       });
-      if(targets.length > 0) {
-        const closest = creep.pos.findClosestByRange(targets);
-        if(creep.transfer(closest, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(closest);
-        }
+      if(targets.length === 0) { return false; }
+      const closest = creep.pos.findClosestByRange(targets);
+      if(creep.transfer(closest, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
+        creep.moveTo(closest);
       }
     } else {
       const containers = getEnergyContainers();
-      if (containers.length === 0) { return; }
+      if (containers.length === 0) { return false; }
       const closest = creep.pos.findClosestByRange(containers);
       if(creep.withdraw(closest, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
         creep.moveTo(closest);

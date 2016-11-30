@@ -49,9 +49,20 @@ const creeps = Object.values(Game.creeps).map(creep => {
 }).filter(creep => creep !== null);
 
 
-creeps.forEach(creep => creep.run());
+creeps.forEach(creep => {
+  if (creep.run() === false) {
+    const creepMemory = creep.creep.memory;
+    if (!creepMemory.idleTicks) {
+      creepMemory.idleTicks = 1
+    } else {
+      creepMemory.idleTicks++;
+    }
+  } else {
+    creep.creep.memory.idleTicks = 0;
+  }
+});
 
-if (Game.spawns['Spawn1'].spawning === null) {
+if (Game.spawns['Spawn1'].spawning === null && Object.keys(RoleUsage.excessRoles).length === 0) {
   const { unitsByRole } = RoleUsage;
   const needsAutospawn = Object.entries(Roles)
     .filter(role => {
@@ -83,13 +94,27 @@ Statistics.track();
 
 Utilities.debounceByInterval(() => {
   console.log("\n\n");
-  console.log('Unit totals:', JSON.stringify(RoleUsage.unitsByRole));
-  console.log('Minimum units:', JSON.stringify(RoleUsage.roleMinimums));
+  console.log('Unit totals:',
+    Object.entries(RoleUsage.unitsByRole)
+      .sort((a, b) => b[1] - a[1])
+      .map(r => `${r[0]}=${r[1]}`)
+      .join(', '));
   if (RoleUsage.requiredRoles.length > 0) {
-    console.log('Required units:', JSON.stringify(RoleUsage.requiredRoles));
+    console.log('Required units:',
+    RoleUsage.requiredRoles
+      .sort((a, b) => b[1] - a[1])
+      .map(r => `${r[0]}=${r[1] - RoleUsage.unitsByRole[r[0]]}`)
+      .join(', '));
   }
   if (RoleUsage.excessRoles.length > 0) {
-    console.log('Excess units:', JSON.stringify(RoleUsage.excessRoles));
+    console.log('Excess units:',
+      RoleUsage.excessRoles
+        .sort((a, b) => b[1] - a[1])
+        .map(r => `${r[0]}=${r[1]}`)
+        .join(', '));
+  }
+  if (RoleUsage.idleCreeps.length > 0) {
+    console.log('Idle creeps:', RoleUsage.idleCreeps.length);
   }
   Statistics.report();
 });
