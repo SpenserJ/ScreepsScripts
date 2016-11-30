@@ -9,6 +9,10 @@ const Roles = {
   TransferEnergy: require('../src/classes/units/TransferEnergy').default,
 }
 
+const Structures = {
+  Tower: require('../src/classes/structures/Tower').default,
+};
+
 // Remove old creeps.
 for (var name in Memory.creeps) {
   if(!Game.creeps[name]) {
@@ -89,6 +93,12 @@ if (Game.spawns['Spawn1'].spawning === null && Object.keys(RoleUsage.excessRoles
     }
   }
 }
+
+Object.values(Game.structures).forEach(structure => {
+  if (structure.structureType === STRUCTURE_TOWER) {
+    new Structures.Tower(structure).run();
+  }
+});
 
 Statistics.track();
 

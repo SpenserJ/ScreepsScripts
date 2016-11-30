@@ -26,6 +26,8 @@ export const findStorageWithSpace = room => findStorage(room)
 export const findStorageWithExcess = (room, amount = CARRY_CAPACITY) => findStorage(room)
   .filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount * 5)
   .sort(s => s.structureType === STRUCTURE_CONTAINER ? -1 : 0);
+export const findTowers = room => getRoom(room)
+  .find(FIND_MY_STRUCTURES, { filter: structure => structure.structureType == STRUCTURE_TOWER });
 
 export const debounceByInterval = (func, interval = 5) => {
   if (Game.time % interval === 0) { func(); }
