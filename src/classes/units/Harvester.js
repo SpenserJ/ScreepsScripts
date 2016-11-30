@@ -1,10 +1,16 @@
 import BaseUnit from '../base/Unit';
 import * as Utilities from '../../utilities';
 
+const unitCalculation = (minUnits, maxUnits, x) => {
+  const removeUnitsRaw = (-(maxUnits * 2) / (1 + Math.pow(Math.E, -2 * x))) + maxUnits;
+  const removeUnits = Math.max(removeUnitsRaw, -(maxUnits - minUnits));
+  return Math.ceil(maxUnits + removeUnits);
+};
+
 export default class Harvester extends BaseUnit {
   static minimumUnits = () => {
-    const energyPercent = 1 - (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity()) + .01;
-    return Math.ceil(6 * energyPercent);
+    const energyPercent = Utilities.getTotalEnergy() / Utilities.getEnergyCapacity();
+    return unitCalculation(2, 7, energyPercent);
   };
   static autospawnPriority = 100;
 
