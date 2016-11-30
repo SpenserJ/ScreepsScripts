@@ -10,7 +10,7 @@ export default class Harvester extends BaseUnit {
   static autospawnPriority = 100;
 
   static decideCreepParts = (ClassType) => {
-    if (Object.values(Game.creeps).length > 3) {
+    if (Object.values(Game.creeps).length < 3) {
       return [WORK, CARRY, MOVE];
     }
     return [WORK, WORK, WORK, CARRY, MOVE, MOVE];
@@ -49,12 +49,8 @@ export default class Harvester extends BaseUnit {
       }
     }
     else {
-      var targets = creep.room.find(FIND_STRUCTURES, {
-        filter: (structure) => {
-          return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN || structure.structureType === STRUCTURE_CONTAINER) &&
-            structure.energy < structure.energyCapacity;
-        }
-      }).sort(a => a.structureType === STRUCTURE_CONTAINER ? 1 : 0);
+      var targets = Utilities.findStorageWithSpace(creep.room.id)
+        .sort(a => a.structureType === STRUCTURE_CONTAINER ? 1 : 0);
       if(targets.length > 0) {
         const closest = creep.pos.findClosestByRange(targets);
         this.storeEnergy(closest);

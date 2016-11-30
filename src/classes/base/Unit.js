@@ -26,6 +26,10 @@ export default class BaseUnit {
       this.creep = creep;
     }
 
+    getCarryCapacity() {
+      return this.creep.body.filter(part => part.type === CARRY).length * CARRY_CAPACITY;
+    }
+
     storeEnergy(target) {
       const creep = this.creep;
       const energy = creep.carry[RESOURCE_ENERGY];
