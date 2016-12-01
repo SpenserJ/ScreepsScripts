@@ -24,19 +24,17 @@ for (var name in Memory.creeps) {
 let RoleUsage = getRoleUsage();
 
 // Reassign builders and upgraders
-if (RoleUsage.excessRoles.length > 0 && RoleUsage.requiredRoles.length > 0) {
-  const { excessRoles, requiredRoles } = RoleUsage;
-  const reassignableRoles = excessRoles.filter(r => r[0].canReassign);
-  if (reassignableRoles.length > 0) {
-    const extra = Object.values(Game.creeps)
-      .filter(creep => creep.memory.role === reassignableRoles[0][0])
-      .sort(creep => creep.memory.originalRole === requiredRoles[0][0] ? -1 : 0)
-      [0];
-    if (extra) {
-      console.log(`Reassigning ${extra.name} (${extra.memory.role}) to ${requiredRoles[0][0]}`);
-      extra.memory.role = requiredRoles[0][0];
-      RoleUsage = getRoleUsage();
-    }
+const reassignableRoles = RoleUsage.excessRoles.filter(r => r[0].canReassign);
+if (reassignableRoles.length > 0 && RoleUsage.requiredRoles.length > 0) {
+  const { requiredRoles } = RoleUsage;
+  const extra = Object.values(Game.creeps)
+    .filter(creep => creep.memory.role === reassignableRoles[0][0])
+    .sort(creep => creep.memory.originalRole === requiredRoles[0][0] ? -1 : 0)
+    [0];
+  if (extra) {
+    console.log(`Reassigning ${extra.name} (${extra.memory.role}) to ${requiredRoles[0][0]}`);
+    extra.memory.role = requiredRoles[0][0];
+    RoleUsage = getRoleUsage();
   }
 } else if (RoleUsage.requiredRoles.length > 0) {
   /*const extra = Object.values(Game.creeps)
@@ -65,7 +63,7 @@ creeps.forEach(creep => {
   }
 });
 
-if (Game.spawns['Spawn1'].spawning === null && Object.keys(RoleUsage.excessRoles).length === 0) {
+if (Game.spawns['Spawn1'].spawning === null && Object.keys(reassignableRoles).length === 0) {
   const { unitsByRole } = RoleUsage;
   const needsAutospawn = Object.entries(Roles)
     .filter(role => {
