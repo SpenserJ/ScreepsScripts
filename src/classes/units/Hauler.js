@@ -79,31 +79,26 @@ export default class Hauler extends BaseUnit {
 
     if (creep.memory.task === 'restockSpawn') {
       if (creep.carry[RESOURCE_ENERGY] > 0) {
-        const closest = creep.pos.findClosestByRange(spawnStorage);
-        if(creep.transfer(closest, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(closest);
-        }
-        return true;
+        this.storeEnergy(creep.pos.findClosestByRange(spawnStorage));
       } else {
         if (containers.length === 0) { return false; }
-        const closest = creep.pos.findClosestByRange(containers);
-        if(creep.withdraw(closest, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(closest);
-        }
+        this.withdrawEnergy(creep.pos.findClosestByRange(containers));
       }
+
+      return true;
     } else if (creep.memory.task === 'restockTower') {
-      const towers = Utilities.findTowers(creep.room.id)
-        .filter(tower => tower.energy < tower.energyCapacity);
+      if (creep.carry[RESOURCE_ENERGY] > 0) {
+        const towers = Utilities.findTowers(creep.room.id)
+          .filter(tower => tower.energy < tower.energyCapacity);
 
-      if (towers.length) {
-        const closest = creep.pos.findClosestByRange(towers);
-        if(creep.transfer(closest, RESOURCE_ENERGY) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(closest);
-        }
-        return true;
+        if (towers.length === 0) { return false; }
+        this.storeEnergy(creep.pos.findClosestByRange(towers));
+      } else {
+        if (containers.length === 0) { return false; }
+        this.withdrawEnergy(creep.pos.findClosestByRange(containers));
       }
 
-      return false;
+      return true;
     } else {
       if (creep.carry[RESOURCE_ENERGY] > 0) {
         // TODO: This has a bug where haulers will repeatedly empty and fill the same box
