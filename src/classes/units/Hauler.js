@@ -100,16 +100,15 @@ export default class Hauler extends BaseUnit {
 
       return true;
     } else {
+      const storageWithSpace = Utilities.findStorageWithSpace();
+      const trueStorage = Game.spawns['Spawn1'].pos.findClosestByRange(
+        storageWithSpace.filter(s => s.structureType === STRUCTURE_STORAGE));
+      const target = trueStorage ? trueStorage : Game.spawns['Spawn1'].pos.findClosestByRange(storageWithSpace)
       if (creep.carry[RESOURCE_ENERGY] > 0) {
-        // TODO: This has a bug where haulers will repeatedly empty and fill the same box
-        const storageWithSpace = Utilities.findStorageWithSpace();
-        const trueStorage = Game.spawns['Spawn1'].pos.findClosestByRange(
-          storageWithSpace.filter(s => s.structureType === STRUCTURE_STORAGE));
-        if (trueStorage) { this.storeEnergy(trueStorage); }
-        else { this.storeEnergy(Game.spawns['Spawn1'].pos.findClosestByRange(storageWithSpace)); }
+        this.storeEnergy(target);
         return true;
       } else {
-        const containersToEmpty = getStorageNearSources(creep.room);
+        const containersToEmpty = getStorageNearSources(creep.room).filter(c => c !== target);
         if (containersToEmpty.length === 0) { return false; }
         this.withdrawEnergy(containersToEmpty[0]);
         return true;
