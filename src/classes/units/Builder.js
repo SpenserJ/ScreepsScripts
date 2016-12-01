@@ -48,6 +48,7 @@ export default class Builder extends BaseUnit {
       return true;
     } else {
       const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity());
+      // TODO: This doesn't pull from spawn properly when starting a new game
       const storage = targets.filter(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE);
       const closestTarget = creep.pos.findClosestByRange(storage.length ? storage : targets);
       if (closestTarget) {

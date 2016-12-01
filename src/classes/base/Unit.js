@@ -3,6 +3,7 @@ import _ from 'lodash';
 import { calculateCreepCost, findStorageWithSpace } from '../../utilities';
 import { appendToTickStat } from '../../statistics';
 
+// TODO: Make this handle diagonally adjacent containers
 const findContainersNearSpawn = room => {
   const spawn = Object.values(Game.spawns)
     .filter(s => s.roomName = room.name)[0];

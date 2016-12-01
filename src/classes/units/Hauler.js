@@ -35,7 +35,7 @@ export default class Hauler extends BaseUnit {
       .filter(tower => tower.energy < tower.energyCapacity).length;
 
     // Get haulers that are needed.
-    const haulersNeeded = getStorageNearSources(Game.rooms.W7N3)
+    const haulersNeeded = getStorageNearSources(Utilities.getRoom())
       .map(s => Math.ceil(s.store[RESOURCE_ENERGY] * 2 / s.storeCapacity))
       .reduce((acc, next) => (acc + next), 0);
 

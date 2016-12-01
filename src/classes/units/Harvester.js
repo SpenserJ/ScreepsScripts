@@ -15,7 +15,7 @@ export default class Harvester extends BaseUnit {
   static autospawnPriority = 100;
 
   static decideCreepParts = (ClassType) => {
-    const optimal = [WORK, WORK, WORK, CARRY, MOVE, MOVE];
+    const optimal = [WORK, WORK, WORK, CARRY, MOVE];
     if (Utilities.getTotalEnergyForSpawn() >= Utilities.calculateCreepCost(optimal)) {
       return optimal;
     }
@@ -53,9 +53,9 @@ export default class Harvester extends BaseUnit {
 
     if (creep.memory.task === 'harvest') {
       var source = Game.getObjectById(creep.memory.sourceId);
-      if(creep.harvest(source) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(source);
-      }
+      const result = creep.harvest(source);
+      if (result === ERR_NOT_IN_RANGE) { creep.moveTo(source); }
+      else if (result === ERR_NOT_ENOUGH_RESOURCES) { creep.memory.task = 'deposit'; }
     }
     else {
       var targets = Utilities.findStorageWithSpace(creep.room.id)
