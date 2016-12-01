@@ -57,15 +57,11 @@ const creeps = Object.values(Game.creeps).map(creep => {
 
 
 creeps.forEach(creep => {
+  const creepMemory = creep.creep.memory;
   if (creep.run() === false) {
-    const creepMemory = creep.creep.memory;
-    if (!creepMemory.idleTicks) {
-      creepMemory.idleTicks = 1
-    } else {
-      creepMemory.idleTicks++;
-    }
+    creepMemory.idleTicks = (creepMemory.idleTicks || 0) + 1;
   } else {
-    creep.creep.memory.idleTicks = 0;
+    creepMemory.idleTicks = (creepMemory.idleTicks - 1) || 0;
   }
 });
 

@@ -10,7 +10,7 @@ const unitCalculation = (minUnits, maxUnits, x) => {
 export default class Harvester extends BaseUnit {
   static minimumUnits = () => {
     const energyPercent = Utilities.getTotalEnergy() / Utilities.getEnergyCapacity();
-    return unitCalculation(2, 7, energyPercent);
+    return unitCalculation(2, 5, energyPercent);
   };
   static autospawnPriority = 100;
 
