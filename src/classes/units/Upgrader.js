@@ -15,10 +15,11 @@ export default class Upgrader extends BaseUnit {
     if (super.run() === false) { return; }
     const creep = this.creep;
     if (creep.carry.energy == 0) {
-      const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity())
-        .sort((a, b) =>  (a.structureType == STRUCTURE_EXTENSION) ? -1 : 0);
-      if (targets.length > 0) {
-        this.withdrawEnergy(targets[0]);
+      const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity());
+      const storage = targets.filter(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE);
+      const closestTarget = creep.pos.findClosestByRange(storage.length ? storage : targets);
+      if (closestTarget) {
+        this.withdrawEnergy(closestTarget);
         return true;
       }
     } else {

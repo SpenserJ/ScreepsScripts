@@ -113,7 +113,7 @@ Utilities.debounceByInterval(() => {
     console.log('Required units:',
     RoleUsage.requiredRoles
       .sort((a, b) => b[1] - a[1])
-      .map(r => `${r[0]}=${r[1] - RoleUsage.unitsByRole[r[0]]}`)
+      .map(r => `${r[0]}=${r[1] - (RoleUsage.unitsByRole[r[0]] || 0)}`)
       .join(', '));
   }
   if (RoleUsage.excessRoles.length > 0) {

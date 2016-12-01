@@ -8,7 +8,7 @@ export default class Builder extends BaseUnit {
       const needRepair = Utilities.structuresNeedingRepair().length;
       if (needRepair > 0) { return  Math.ceil(needRepair / 2); }
       const needBuild = Utilities.findConstructionSites().length;
-      if (needBuild > 0) { return Math.ceil(needBuild / 2); }
+      if (needBuild > 0) { return needBuild * 2; }
       return 0;
     })();
     return Math.min(requested, 4);
@@ -32,7 +32,7 @@ export default class Builder extends BaseUnit {
         if(creep.repair(closest) == ERR_NOT_IN_RANGE) {
           creep.moveTo(closest);
         }
-        return;
+        return true;
       }
 
       var targets = Utilities.findConstructionSites()
@@ -45,10 +45,17 @@ export default class Builder extends BaseUnit {
       if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
         creep.moveTo(targets[0]);
       }
+      return true;
     } else {
-      const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity())
-        .sort((a, b) => (a.structureType == STRUCTURE_EXTENSION) ? -1 : 0);
-      if (targets.length > 0) { this.withdrawEnergy(targets[0]); }
+      const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity());
+      const storage = targets.filter(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE);
+      const closestTarget = creep.pos.findClosestByRange(storage.length ? storage : targets);
+      if (closestTarget) {
+        this.withdrawEnergy(closestTarget);
+        return true;
+      }
     }
+
+    return false;
   }
 };
