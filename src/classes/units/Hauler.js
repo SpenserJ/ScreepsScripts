@@ -91,7 +91,7 @@ export default class Hauler extends BaseUnit {
           creep.moveTo(closest);
         }
       }
-
+    } else if (creep.memory.task === 'restockTower') {
       const towers = Utilities.findTowers(creep.room.id)
         .filter(tower => tower.energy < tower.energyCapacity);
 
