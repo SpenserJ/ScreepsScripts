@@ -16,7 +16,7 @@ export const structuresNeedingRepair = room => getRoom(room)
 
 export const findConstructionSites = room => getRoom(room).find(FIND_CONSTRUCTION_SITES);
 export const findStructures = room => getRoom(room).find(FIND_STRUCTURES);
-const storageStructures = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_CONTAINER];
+const storageStructures = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
 export const findStorage = room => getRoom(room)
   .find(FIND_STRUCTURES, { filter: s => storageStructures.includes(s.structureType) });
 export const findStorageWithSpace = room => findStorage(room)
@@ -25,7 +25,15 @@ export const findStorageWithSpace = room => findStorage(room)
     : (s.energy < s.energyCapacity));
 export const findStorageWithExcess = (room, amount = CARRY_CAPACITY) => findStorage(room)
   .filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount * 5)
-  .sort(s => s.structureType === STRUCTURE_CONTAINER ? -1 : 0);
+  .sort(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE ? -1 : 0);
+export const findSpawnStorage = room => getRoom(room)
+  .find(FIND_STRUCTURES, {
+    filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION),
+  });
+export const findNonSpawnStorage = room => getRoom(room)
+  .find(FIND_STRUCTURES, {
+    filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE),
+  });
 export const findTowers = room => getRoom(room)
   .find(FIND_MY_STRUCTURES, { filter: structure => structure.structureType == STRUCTURE_TOWER });
 

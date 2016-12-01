@@ -6,7 +6,7 @@ const Roles = {
   Harvester: require('../src/classes/units/Harvester').default,
   Builder: require('../src/classes/units/Builder').default,
   Upgrader: require('../src/classes/units/Upgrader').default,
-  TransferEnergy: require('../src/classes/units/TransferEnergy').default,
+  Hauler: require('../src/classes/units/Hauler').default,
 }
 
 const Structures = {
