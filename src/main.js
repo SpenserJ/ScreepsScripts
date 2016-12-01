@@ -124,10 +124,13 @@ Utilities.debounceByInterval(() => {
   }
   if (RoleUsage.idleCreeps.length > 0) {
     console.log('Idle creeps:',RoleUsage.idleCreeps.length,
-      JSON.stringify(RoleUsage.idleCreeps.reduce((acc, next) => {
+      Object.entries(RoleUsage.idleCreeps.reduce((acc, next) => {
         acc[next.memory.role] = (acc[next.memory.role] || 0) + 1;
         return acc;
-      }, {})));
+      }, {}))
+      .sort((a, b) => b[1] - a[1])
+      .map(r => `${r[0]}=${r[1]}`)
+      .join(', '));
   }
   Statistics.report();
 });

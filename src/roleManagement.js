@@ -57,7 +57,7 @@ const calculateRoleUsage = () => {
       return priorityA - priorityB;
     });
 
-  const idleCreeps = Object.values(Game.creeps).filter(creep => creep.memory.idleTicks);
+  const idleCreeps = Object.values(Game.creeps).filter(creep => creep.memory.idleTicks > 0);
 
   roleUsage = { unitsByRole, roleMinimums, requiredRoles, excessRoles, leastEssential, idleCreeps };
 };
