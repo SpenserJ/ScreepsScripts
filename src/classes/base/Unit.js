@@ -9,7 +9,7 @@ const findContainersNearSpawn = room => {
   return room
     .find(FIND_STRUCTURES, {
       filter: structure => (
-        structure.structureType == STRUCTURE_CONTAINER &&
+        (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_STORAGE) &&
         _.sum(structure.store) < (structure.storeCapacity - 200) &&
         Math.abs(structure.pos.x - spawn.pos.x) <= 1 &&
         Math.abs(structure.pos.y - spawn.pos.y) <= 1
@@ -81,6 +81,13 @@ export default class BaseUnit {
             creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
           }
           let deathTarget = Game.getObjectById(creep.memory.deathTarget);
+
+          // If the target is null, it has been destroyed since we selected it.
+          if (deathTarget === null) {
+            creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
+            return false;
+          }
+
           if (deathTarget.pos.roomName === creep.pos.roomName &&
               deathTarget.pos.x === creep.pos.x &&
               deathTarget.pos.y === creep.pos.y) {
