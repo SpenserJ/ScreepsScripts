@@ -51,6 +51,8 @@ export default class Hauler extends BaseUnit {
     return [CARRY, CARRY, MOVE];
   }
 
+  static canReassign = false;
+
   run() {
     if (super.run() === false) { return; }
     const creep = this.creep;

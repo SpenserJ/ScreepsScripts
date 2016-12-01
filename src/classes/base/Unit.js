@@ -36,6 +36,8 @@ export default class BaseUnit {
       console.log(`Spawning new ${ClassType.name} with ${creepCost} energy: ${newName}`);
     }
 
+    static canReassign = true;
+
     constructor(creep) {
       this.creep = creep;
     }
