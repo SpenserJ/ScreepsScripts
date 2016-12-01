@@ -5,13 +5,13 @@ import * as Utilities from '../../utilities';
 
 const getEnergyContainers = () => Utilities.findStructures()
   .filter(structure => (
-    structure.structureType === STRUCTURE_CONTAINER &&
+    (structure.structureType === STRUCTURE_CONTAINER || structure.structureType === STRUCTURE_STORAGE) &&
     structure.store[RESOURCE_ENERGY] > 50
   ));
 
 const getStorageNearSources = (room) => {
   const sources = room.find(FIND_SOURCES);
-  const containers = getEnergyContainers();
+  const containers = getEnergyContainers().filter(s => s.structureType !== STRUCTURE_STORAGE);
   if (containers.length === 0) { return []; }
   const containersToEmpty = sources
     .map(source => source.pos.findClosestByRange(containers))
@@ -102,8 +102,11 @@ export default class Hauler extends BaseUnit {
     } else {
       if (creep.carry[RESOURCE_ENERGY] > 0) {
         // TODO: This has a bug where haulers will repeatedly empty and fill the same box
-        const storageWithSpace = Game.spawns['Spawn1'].pos.findClosestByRange(Utilities.findStorageWithSpace());
-        this.storeEnergy(storageWithSpace);
+        const storageWithSpace = Utilities.findStorageWithSpace();
+        const trueStorage = Game.spawns['Spawn1'].pos.findClosestByRange(
+          storageWithSpace.filter(s => s.structureType === STRUCTURE_STORAGE));
+        if (trueStorage) { this.storeEnergy(trueStorage); }
+        else { this.storeEnergy(Game.spawns['Spawn1'].pos.findClosestByRange(storageWithSpace)); }
         return true;
       } else {
         const containersToEmpty = getStorageNearSources(creep.room);

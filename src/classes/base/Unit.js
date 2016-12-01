@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { calculateCreepCost } from '../../utilities';
+import { calculateCreepCost, findStorageWithSpace } from '../../utilities';
 import { appendToTickStat } from '../../statistics';
 
 const findContainersNearSpawn = room => {
@@ -9,7 +9,7 @@ const findContainersNearSpawn = room => {
   return room
     .find(FIND_STRUCTURES, {
       filter: structure => (
-        (structure.structureType == STRUCTURE_CONTAINER || structure.structureType == STRUCTURE_STORAGE) &&
+        structure.structureType == STRUCTURE_CONTAINER &&
         _.sum(structure.store) < (structure.storeCapacity - 200) &&
         Math.abs(structure.pos.x - spawn.pos.x) <= 1 &&
         Math.abs(structure.pos.y - spawn.pos.y) <= 1
@@ -74,6 +74,10 @@ export default class BaseUnit {
     run() {
       const creep = this.creep;
       if (creep.ticksToLive < 350 || creep.memory.idleTicks > 25) {
+        if (creep.carry[RESOURCE_ENERGY] !== 0) {
+          this.storeEnergy(creep.pos.findClosestByRange(findStorageWithSpace(creep.room.id)));
+          return false;
+        }
         const containers = findContainersNearSpawn(creep.room);
         if (creep.ticksToLive % 5 === 0) {
           console.log(`${creep.name} (${this.constructor.name}) is going to die in ${creep.ticksToLive} ticks`);
