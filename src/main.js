@@ -124,7 +124,11 @@ Utilities.debounceByInterval(() => {
         .join(', '));
   }
   if (RoleUsage.idleCreeps.length > 0) {
-    console.log('Idle creeps:', RoleUsage.idleCreeps.length);
+    console.log('Idle creeps:',RoleUsage.idleCreeps.length,
+      JSON.stringify(RoleUsage.idleCreeps.reduce((acc, next) => {
+        acc[next.memory.role] = (acc[next.memory.role] || 0) + 1;
+        return acc;
+      }, {})));
   }
   Statistics.report();
 });

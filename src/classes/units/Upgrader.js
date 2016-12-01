@@ -4,7 +4,9 @@ import * as Utilities from '../../utilities';
 export default class Upgrader extends BaseUnit {
   static minimumUnits = () => {
     if (Utilities.getTotalEnergyForSpawn() < 300) { return 0; }
-    if (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity() > 0.8) { return 2; }
+    if (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity() > 0.7) {
+      return 5;
+    }
     return 1;
   };
   static autospawnPriority = 1;
@@ -15,11 +17,16 @@ export default class Upgrader extends BaseUnit {
     if (creep.carry.energy == 0) {
       const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity())
         .sort((a, b) =>  (a.structureType == STRUCTURE_EXTENSION) ? -1 : 0);
-      if (targets.length > 0) { this.withdrawEnergy(targets[0]); }
+      if (targets.length > 0) {
+        this.withdrawEnergy(targets[0]);
+        return true;
+      }
     } else {
-      if(creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
+      if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
         creep.moveTo(creep.room.controller);
       }
+      return true;
     }
+    return false;
   }
 };
