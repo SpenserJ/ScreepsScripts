@@ -1,6 +1,6 @@
 import _ from 'lodash';
 
-import { calculateCreepCost, findStorageWithSpace } from '../../utilities';
+import { calculateCreepCost, findStorageWithSpace, getSpawn } from '../../utilities';
 import { appendToTickStat } from '../../statistics';
 
 // TODO: Make this handle diagonally adjacent containers
@@ -27,7 +27,7 @@ export default class BaseUnit {
     }
 
     static autospawn = (ClassType) => {
-      var newName = Game.spawns['Spawn1'].createCreep(
+      var newName = getSpawn().createCreep(
         ClassType.decideCreepParts(ClassType),
         undefined,
         { role: ClassType.name, originalRole: ClassType.name }
@@ -103,7 +103,7 @@ export default class BaseUnit {
               this.storeEnergy(deathTarget);
             } else {
               console.log(`Recycling ${creep.name} (${this.constructor.name})`)
-              Game.spawns['Spawn1'].recycleCreep(creep);
+              getSpawn().recycleCreep(creep);
             }
           } else {
             const atDeathTarget = creep.room.lookAt(deathTarget.pos.x, deathTarget.pos.y)

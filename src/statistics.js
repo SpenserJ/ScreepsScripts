@@ -14,8 +14,10 @@ export const appendToTickStat = (stat, value) => {
   statHistory[statHistory.length - 1].push(value);
 }
 
-export const getStatAverage = stat =>
-  _.mean(Memory.statistics[stat].map(tick => Array.isArray(tick) ? _.sum(tick) : tick));
+export const getStatAverage = stat => {
+  const flattened = Memory.statistics[stat].map(tick => Array.isArray(tick) ? _.sum(tick) : tick);
+  return _.sum(flattened) / flattened.length;
+}
 
 export const track = () => {
   if (typeof Memory.statistics === 'undefined') { Memory.statistics = {}; }

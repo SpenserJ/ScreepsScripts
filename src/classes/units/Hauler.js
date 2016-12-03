@@ -101,9 +101,9 @@ export default class Hauler extends BaseUnit {
       return true;
     } else {
       const storageWithSpace = Utilities.findStorageWithSpace();
-      const trueStorage = Game.spawns['Spawn1'].pos.findClosestByRange(
+      const trueStorage = Utilities.getSpawn().pos.findClosestByRange(
         storageWithSpace.filter(s => s.structureType === STRUCTURE_STORAGE));
-      const target = trueStorage ? trueStorage : Game.spawns['Spawn1'].pos.findClosestByRange(storageWithSpace)
+      const target = trueStorage ? trueStorage : Utilities.getSpawn().pos.findClosestByRange(storageWithSpace)
       if (creep.carry[RESOURCE_ENERGY] > 0) {
         this.storeEnergy(target);
         return true;

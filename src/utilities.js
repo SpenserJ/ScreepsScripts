@@ -1,4 +1,8 @@
 export const getRoom = (id = Object.keys(Game.rooms)[0]) => Game.rooms[id];
+export const getSpawn = room => {
+  const fullRoom = getRoom(room)
+  return Object.values(Game.spawns).filter(s => s.pos.roomName === fullRoom.name)[0];
+};
 
 
 export const calculateCreepCost = body =>

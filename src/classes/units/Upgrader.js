@@ -3,11 +3,14 @@ import * as Utilities from '../../utilities';
 
 export default class Upgrader extends BaseUnit {
   static minimumUnits = () => {
-    if (Utilities.getTotalEnergyForSpawn() < 300) { return 0; }
-    if (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity() > 0.7 || Utilities.getTotalEnergy() > 10000) {
-      return 5;
-    }
-    return 2;
+    const requested = (() => {
+      if (Utilities.getTotalEnergyForSpawn() < 300) { return 0; }
+      if (Utilities.getTotalEnergy() / Utilities.getEnergyCapacity() > 0.7 || Utilities.getTotalEnergy() > 10000) {
+        return Math.ceil(Utilities.getTotalEnergy() / 100);
+      }
+      return 1;
+    })();
+    return Math.min(requested, 4);
   };
   static autospawnPriority = 1;
 

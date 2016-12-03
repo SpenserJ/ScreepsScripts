@@ -64,7 +64,7 @@ creeps.forEach(creep => {
   }
 });
 
-if (Game.spawns['Spawn1'].spawning === null && Object.keys(reassignableRoles).length === 0) {
+if (Utilities.getSpawn().spawning === null && Object.keys(reassignableRoles).length === 0) {
   const { unitsByRole } = RoleUsage;
   const needsAutospawn = Object.entries(Roles)
     .filter(role => {
