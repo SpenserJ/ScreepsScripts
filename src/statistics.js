@@ -1,5 +1,7 @@
-import * as Utilities from './utilities';
 import _ from 'lodash';
+
+import * as Utilities from './utilities';
+import { log, debug } from './ScreepsCommander.js';
 
 const updateStatisticOnTick = (stat, value, limit = 10) => {
   const stats = Memory.statistics;
@@ -25,7 +27,13 @@ export const track = () => {
 
 export const report = () => {
   const stats = Memory.statistics;
-  console.log(`Average Energy: ${getStatAverage('energyTotal')}/${getStatAverage('energyCapacity')}`);
+  debug(`Average Energy: ${getStatAverage('energyTotal')}/${getStatAverage('energyCapacity')}`);
   const energyChange = getStatAverage('energyUsage');
-  console.log(`Average Energy Change: ${energyChange > 0 ? '+' : ''}${Math.round(energyChange * 100) / 100}`);
+  debug(`Average Energy Change: ${energyChange > 0 ? '+' : ''}${Math.round(energyChange * 100) / 100}`);
+
+  log('stats.energy', {
+    stored: getStatAverage('energyTotal'),
+    capacity: getStatAverage('energyCapacity'),
+    usage: getStatAverage('energyUsage'),
+  });
 };

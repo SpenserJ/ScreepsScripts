@@ -1,6 +1,7 @@
 import * as Utilities from './utilities';
 import * as Statistics from './statistics';
 import { getRoleUsage } from './roleManagement';
+import { log, debug } from './ScreepsCommander.js';
 
 const Roles = {
   Harvester: require('../src/classes/units/Harvester').default,
@@ -101,27 +102,37 @@ Statistics.track();
 
 Utilities.debounceByInterval(() => {
   console.log("\n\n");
-  console.log('Unit totals:',
+  debug('Unit totals:',
     Object.entries(RoleUsage.unitsByRole)
       .sort((a, b) => b[1] - a[1])
       .map(r => `${r[0]}=${r[1]}`)
       .join(', '));
+  log('roles.usage', RoleUsage.unitsByRole);
+
   if (RoleUsage.requiredRoles.length > 0) {
-    console.log('Required units:',
+    debug('Required units:',
     RoleUsage.requiredRoles
       .sort((a, b) => b[1] - a[1])
       .map(r => `${r[0]}=${r[1] - (RoleUsage.unitsByRole[r[0]] || 0)}`)
       .join(', '));
+    log('roles.required', RoleUsage.requiredRoles.reduce((acc, next) => {
+      acc[next[0]] = next[1];
+      return acc;
+    }, {}));
   }
   if (RoleUsage.excessRoles.length > 0) {
-    console.log('Excess units:',
+    debug('Excess units:',
       RoleUsage.excessRoles
         .sort((a, b) => b[1] - a[1])
         .map(r => `${r[0]}=${r[1]}`)
         .join(', '));
+    log('roles.excess', RoleUsage.excessRoles.reduce((acc, next) => {
+      acc[next[0]] = next[1];
+      return acc;
+    }, {}));
   }
   if (RoleUsage.idleCreeps.length > 0) {
-    console.log('Idle creeps:',RoleUsage.idleCreeps.length,
+    debug('Idle creeps:',RoleUsage.idleCreeps.length,
       Object.entries(RoleUsage.idleCreeps.reduce((acc, next) => {
         acc[next.memory.role] = (acc[next.memory.role] || 0) + 1;
         return acc;
@@ -129,6 +140,12 @@ Utilities.debounceByInterval(() => {
       .sort((a, b) => b[1] - a[1])
       .map(r => `${r[0]}=${r[1]}`)
       .join(', '));
+
+    log('roles.idle', RoleUsage.idleCreeps.reduce((acc, next) => {
+      acc[next.memory.role] = (acc[next.memory.role] || 0) + 1;
+      return acc;
+    }, {}));
   }
+
   Statistics.report();
 });
