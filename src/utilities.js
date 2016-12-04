@@ -27,9 +27,6 @@ export const findStorageWithSpace = room => findStorage(room)
   .filter(s => s.store
     ? (Object.values(s.store).reduce((acc, next) => (acc + next), 0) < s.storeCapacity)
     : (s.energy < s.energyCapacity));
-export const findStorageWithExcess = (room, amount = CARRY_CAPACITY) => findStorage(room)
-  .filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount * 5)
-  .sort(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE ? -1 : 0);
 export const findSpawnStorage = room => getRoom(room)
   .find(FIND_STRUCTURES, {
     filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION),
@@ -60,8 +57,12 @@ export const getRoomMemory = room => Memory.rooms[room.name || room].cache;
 export const getRoomStructureById = (room, id) => getRoomMemory(room).structures[id];
 export const getStructures = (roomProvided, types) => {
   const room = getRoomMemory(roomProvided);
-  return (typeof types === 'undefined')
+  return (typeof types === 'undefined' || types === null)
     ? Object.values(room.structures)
     : [].concat(types)
       .reduce((acc, next) => acc.concat(room.structureTypes[next].map(id => room.structures[id])), []);
 }
+export const sortByRange = creep => (a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y);
+export const findStorageWithExcess = (room, amount = CARRY_CAPACITY, includeSpawnable = false) =>
+getStructures(room, includeSpawnable ? [STRUCTURE_CONTAINER, STRUCTURE_STORAGE] : null)
+.filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount * 5);
