@@ -106,46 +106,21 @@ export default () => {
   Statistics.track();
 
   Utilities.debounceByInterval(() => {
-    console.log("\n\n");
-    debug('Unit totals:',
-      Object.entries(RoleUsage.unitsByRole)
-        .sort((a, b) => b[1] - a[1])
-        .map(r => `${r[0]}=${r[1]}`)
-        .join(', '));
     log('roles.usage', RoleUsage.unitsByRole);
 
     if (RoleUsage.requiredRoles.length > 0) {
-      debug('Required units:',
-      RoleUsage.requiredRoles
-        .sort((a, b) => b[1] - a[1])
-        .map(r => `${r[0]}=${r[1] - (RoleUsage.unitsByRole[r[0]] || 0)}`)
-        .join(', '));
       log('roles.required', RoleUsage.requiredRoles.reduce((acc, next) => {
         acc[next[0]] = next[1];
         return acc;
       }, {}));
     }
     if (RoleUsage.excessRoles.length > 0) {
-      debug('Excess units:',
-        RoleUsage.excessRoles
-          .sort((a, b) => b[1] - a[1])
-          .map(r => `${r[0]}=${r[1]}`)
-          .join(', '));
       log('roles.excess', RoleUsage.excessRoles.reduce((acc, next) => {
         acc[next[0]] = next[1];
         return acc;
       }, {}));
     }
     if (RoleUsage.idleCreeps.length > 0) {
-      debug('Idle creeps:',RoleUsage.idleCreeps.length,
-        Object.entries(RoleUsage.idleCreeps.reduce((acc, next) => {
-          acc[next.memory.role] = (acc[next.memory.role] || 0) + 1;
-          return acc;
-        }, {}))
-        .sort((a, b) => b[1] - a[1])
-        .map(r => `${r[0]}=${r[1]}`)
-        .join(', '));
-
       log('roles.idle', RoleUsage.idleCreeps.reduce((acc, next) => {
         acc[next.memory.role] = (acc[next.memory.role] || 0) + 1;
         return acc;

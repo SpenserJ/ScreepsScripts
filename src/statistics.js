@@ -28,11 +28,6 @@ export const track = () => {
 };
 
 export const report = () => {
-  const stats = Memory.statistics;
-  debug(`Average Energy: ${getStatAverage('energyTotal')}/${getStatAverage('energyCapacity')}`);
-  const energyChange = getStatAverage('energyUsage');
-  debug(`Average Energy Change: ${energyChange > 0 ? '+' : ''}${Math.round(energyChange * 100) / 100}`);
-
   log('stats.energy', {
     stored: getStatAverage('energyTotal'),
     capacity: getStatAverage('energyCapacity'),
