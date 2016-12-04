@@ -1,4 +1,6 @@
 var webpack = require('webpack');
+var path = require('path');
+
 module.exports = {
   entry: './src/main.js',
   output: {
@@ -19,7 +21,10 @@ module.exports = {
     loaders: [
       {
         test: /\.js$/,
-        exclude: /(node_modules|bower_components)/,
+        include: [
+          path.resolve(__dirname, 'src'),
+          path.resolve(__dirname, 'node_modules/screeps-profiler'),
+        ],
         loader: 'babel-loader',
         query: {
           presets: ['es2015', 'stage-0'],
