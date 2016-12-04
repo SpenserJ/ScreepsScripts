@@ -31,7 +31,7 @@ export default class Upgrader extends BaseUnit {
       }
     } else {
       if (creep.upgradeController(creep.room.controller) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(creep.room.controller);
+        creep.moveTo(creep.room.controller, { reusePath: 5 });
       }
       return true;
     }

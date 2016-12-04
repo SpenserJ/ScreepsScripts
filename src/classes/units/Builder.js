@@ -30,7 +30,7 @@ export default class Builder extends BaseUnit {
       if (needRepair.length > 0) {
         const closest = creep.pos.findClosestByRange(needRepair);
         if(creep.repair(closest) == ERR_NOT_IN_RANGE) {
-          creep.moveTo(closest);
+          creep.moveTo(closest, { reusePath: 5 });
         }
         return true;
       }
@@ -43,7 +43,7 @@ export default class Builder extends BaseUnit {
         });
       if (targets.length === 0) { return false; }
       if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(targets[0]);
+        creep.moveTo(targets[0], { reusePath: 5 });
       }
       return true;
     } else {

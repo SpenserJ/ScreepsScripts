@@ -55,7 +55,7 @@ export default class Harvester extends BaseUnit {
     if (creep.memory.task === 'harvest') {
       var source = Game.getObjectById(creep.memory.sourceId);
       const result = creep.harvest(source);
-      if (result === ERR_NOT_IN_RANGE) { creep.moveTo(source); }
+      if (result === ERR_NOT_IN_RANGE) { creep.moveTo(source, { reusePath: 5 }); }
       else if (result === ERR_NOT_ENOUGH_RESOURCES) { creep.memory.task = 'deposit'; }
     }
     else {
