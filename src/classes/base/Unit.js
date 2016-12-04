@@ -1,21 +1,14 @@
 import _ from 'lodash';
 
-import { calculateCreepCost, findStorageWithSpace, getSpawn } from '../../utilities';
+import { calculateCreepCost, findStorageWithSpace, getSpawn, getStructures, getRoomStructureById, getRoomMemory } from '../../utilities';
 import { appendToTickStat } from '../../statistics';
 
 // TODO: Make this handle diagonally adjacent containers
-const findContainersNearSpawn = room => {
-  const spawn = Object.values(Game.spawns)
-    .filter(s => s.roomName = room.name)[0];
-  return room
-    .find(FIND_STRUCTURES, {
-      filter: structure => (
-        structure.structureType == STRUCTURE_CONTAINER &&
-        _.sum(structure.store) < (structure.storeCapacity - 200) &&
-        Math.abs(structure.pos.x - spawn.pos.x) <= 1 &&
-        Math.abs(structure.pos.y - spawn.pos.y) <= 1
-      ),
-    });
+const findContainersNearSpawn = roomRaw => {
+  const room = getRoomMemory(roomRaw);
+  return Object.values(getStructures(roomRaw, STRUCTURE_SPAWN))
+    .reduce((acc, next) => acc.concat(next.nearbyContainers.map(id => getRoomStructureById(room, id))), [])
+    .filter(structure => _.sum(structure.store) < (structure.storeCapacity - 200));
 }
 
 export default class BaseUnit {
@@ -55,6 +48,11 @@ export default class BaseUnit {
       } else {
         // TODO: This doesn't account for almost-full containers
         appendToTickStat('energyUsage', energy);
+        if (target) {
+          creep.room.memory.cache.structuresNeedingRecheck.push(target.id);
+        } else {
+          console.log('Missing target for storeEnergy');
+        }
       }
     }
 
@@ -69,6 +67,11 @@ export default class BaseUnit {
       } else {
         // TODO: This doesn't account for almost-empty containers
         appendToTickStat('energyUsage', -energy);
+        if (target) {
+          creep.room.memory.cache.structuresNeedingRecheck.push(target.id);
+        } else {
+          console.log('Missing target for storeEnergy');
+        }
       }
     }
 
