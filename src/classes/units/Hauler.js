@@ -18,6 +18,9 @@ const getStorageNearSources = (room) => {
     .sort((a, b) => (b.store && b.store[RESOURCE_ENERGY] || 0) - (a.store && a.store[RESOURCE_ENERGY] || 0));
 }
 
+const getTowersNeedingFill = room => Utilities.getStructures(room, STRUCTURE_TOWER)
+  .filter(tower => tower.energy < tower.energyCapacity);
+
 export default class Hauler extends BaseUnit {
   static minimumUnits = () => {
     const usableEnergy = Utilities.findNonSpawnStorage()
@@ -28,8 +31,8 @@ export default class Hauler extends BaseUnit {
       .filter(s => s.energy < s.energyCapacity).length;
 
     // Get tower refills
-    const towersNeedingFill = Utilities.findTowers()
-      .filter(tower => tower.energy < tower.energyCapacity).length;
+    const towersNeedingFill = Object.keys(Memory.rooms)
+      .reduce((acc, next) => (acc + getTowersNeedingFill(next).length), 0);
 
     // Get haulers that are needed.
     const haulersNeeded = getStorageNearSources(Utilities.getRoom())
@@ -59,9 +62,7 @@ export default class Hauler extends BaseUnit {
       .filter(s => s.energy < s.energyCapacity)
       .sort((a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y));
 
-    const towers = Utilities
-      .getStructures(creep.room, STRUCTURE_TOWER)
-      .filter(tower => tower.energy < tower.energyCapacity)
+    const towers = getTowersNeedingFill(creep.room)
       .sort((a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y));
 
     const containers = getEnergyContainers();

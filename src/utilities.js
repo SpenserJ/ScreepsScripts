@@ -35,8 +35,6 @@ export const findNonSpawnStorage = room => getRoom(room)
   .find(FIND_STRUCTURES, {
     filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE),
   });
-export const findTowers = room => getRoom(room)
-  .find(FIND_MY_STRUCTURES, { filter: structure => structure.structureType == STRUCTURE_TOWER });
 
 export const debounceByInterval = (func, interval = 5) => {
   if (Game.time % interval === 0) { func(); }

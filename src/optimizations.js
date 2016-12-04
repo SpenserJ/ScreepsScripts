@@ -70,6 +70,8 @@ export const updateCache = () => {
   Memory.lastCacheRebuild = resetCache ? 1 : (Memory.lastCacheRebuild + 1);
 
   if (!Memory.rooms) { Memory.rooms = {}; }
+  // TODO: Figure out why there is an undefined room appearing
+  delete Memory.rooms[undefined];
   Object.values(Game.rooms).forEach(room => {
     if (!Memory.rooms[room.name]) { Memory.rooms[room.name] = {}; }
     if (!Memory.rooms[room.name].cache || resetCache) {
