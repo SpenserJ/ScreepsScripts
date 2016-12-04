@@ -1,7 +1,7 @@
 import * as Utilities from './utilities';
 import * as Statistics from './statistics';
 import { getRoleUsage } from './roleManagement';
-import { log, debug } from './ScreepsCommander.js';
+import { log, debug, logBatched } from './ScreepsCommander.js';
 
 const Roles = {
   Harvester: require('../src/classes/units/Harvester').default,
@@ -149,3 +149,5 @@ Utilities.debounceByInterval(() => {
 
   Statistics.report();
 });
+
+logBatched();
