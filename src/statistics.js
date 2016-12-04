@@ -25,6 +25,10 @@ export const track = () => {
   updateStatisticOnTick('energyTotal', Utilities.getTotalEnergy());
   updateStatisticOnTick('energyCapacity', Utilities.getEnergyCapacity());
   updateStatisticOnTick('energyUsage', [[]], 50);
+  updateStatisticOnTick('cpuUsage', Game.cpu.getUsed());
+  updateStatisticOnTick('cpuLimit', Game.cpu.limit);
+  updateStatisticOnTick('cputickLimit', Game.cpu.tickLimit);
+  updateStatisticOnTick('cpubucket', Game.cpu.bucket);
 };
 
 export const report = () => {
@@ -33,4 +37,10 @@ export const report = () => {
     capacity: getStatAverage('energyCapacity'),
     usage: getStatAverage('energyUsage'),
   });
+  log('stats.cpu', {
+    usage: getStatAverage('cpuUsage'),
+    limit: getStatAverage('cpuLimit'),
+    tickLimit: getStatAverage('cputickLimit'),
+    bucket: getStatAverage('cpubucket'),
+  })
 };
