@@ -3,7 +3,9 @@ import { debug } from './ScreepsCommander';
 // How many ticks should the cached data exist before it is reset?
 const cacheLifetime = 100;
 // How many ticks should structure stats exist before they are updated?
-const structureStatLifetime = 10;
+const structureStatLifetime = 25;
+// How many ticks should construction stats exist before they are updated?
+const constructionStatLifetime = 5;
 
 const lookAround = (room, pos, lookTypes = null, range = 1) => {
   const around = {};
@@ -132,7 +134,7 @@ export const updateCache = () => {
         };
       });
       roomMem.constructionSites = constructionSites;
-    } else {
+    } else if (Memory.lastCacheRebuild % constructionStatLifetime === 0) {
       Object.keys(roomMem.constructionSites).forEach(id => {
         const site = Game.getObjectById(id);
         if (site) {
