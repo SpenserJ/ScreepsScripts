@@ -9,7 +9,9 @@ export default class Builder extends BaseUnit {
   static minimumUnits = () => {
     const requested = (() => {
       if (Utilities.getTotalEnergyForSpawn() < 300) { return 0; }
-      const needRepair = Utilities.structuresNeedingRepair().length;
+      const needRepair = Object.keys(Memory.rooms)
+        .filter(room => Utilities.getStructures(room, STRUCTURE_TOWER).length === 0)
+        .reduce((acc, next) => (acc + Utilities.structuresNeedingRepair(room)), 0);
       if (needRepair > 0) { return  Math.ceil(needRepair / 2); }
       const needBuild = Object.values(Memory.rooms)
         .reduce((acc, next) => (acc + findConstructionSites(next.cache).length), 0);
