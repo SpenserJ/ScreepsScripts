@@ -54,15 +54,15 @@ export default class Hauler extends BaseUnit {
     if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
 
-    var spawnStorage = creep.room.find(FIND_STRUCTURES, {
-      filter: (structure) => {
-        return (structure.structureType == STRUCTURE_EXTENSION || structure.structureType == STRUCTURE_SPAWN) &&
-          structure.energy < structure.energyCapacity;
-      }
-    });
+    const spawnStorage = Utilities
+      .getStructures(creep.room, [STRUCTURE_EXTENSION, STRUCTURE_SPAWN])
+      .filter(s => s.energy < s.energyCapacity)
+      .sort((a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y));
 
-    const towers = Utilities.findTowers(creep.room.id)
-      .filter(tower => tower.energy < tower.energyCapacity);
+    const towers = Utilities
+      .getStructures(creep.room, STRUCTURE_TOWER)
+      .filter(tower => tower.energy < tower.energyCapacity)
+      .sort((a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y));
 
     const containers = getEnergyContainers();
 
@@ -76,7 +76,7 @@ export default class Hauler extends BaseUnit {
 
     if (creep.memory.task === 'restockSpawn') {
       if (creep.carry[RESOURCE_ENERGY] > 0) {
-        this.storeEnergy(creep.pos.findClosestByRange(spawnStorage));
+        this.storeEnergy(Game.getObjectById(spawnStorage[0].id));
       } else {
         if (containers.length === 0) { return false; }
         this.withdrawEnergy(creep.pos.findClosestByRange(containers));
@@ -85,11 +85,7 @@ export default class Hauler extends BaseUnit {
       return true;
     } else if (creep.memory.task === 'restockTower') {
       if (creep.carry[RESOURCE_ENERGY] > 0) {
-        const towers = Utilities.findTowers(creep.room.id)
-          .filter(tower => tower.energy < tower.energyCapacity);
-
-        if (towers.length === 0) { return false; }
-        this.storeEnergy(creep.pos.findClosestByRange(towers));
+        this.storeEnergy(Game.getObjectById(towers[0].id));
       } else {
         if (containers.length === 0) { return false; }
         this.withdrawEnergy(creep.pos.findClosestByRange(containers));

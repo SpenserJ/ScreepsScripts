@@ -58,9 +58,10 @@ export const getEnergyCapacityForSpawn = room => getRoom(room).energyCapacityAva
 // NEW HELPERS!
 export const getRoomMemory = room => Memory.rooms[room.name || room].cache;
 export const getRoomStructureById = (room, id) => getRoomMemory(room).structures[id];
-export const getStructures = (roomProvided, type) => {
+export const getStructures = (roomProvided, types) => {
   const room = getRoomMemory(roomProvided);
-  return type
-    ? room.structureTypes[type].map(id => room.structures[id])
-    : Object.values(room.structures);
+  return (typeof types === 'undefined')
+    ? Object.values(room.structures)
+    : [].concat(types)
+      .reduce((acc, next) => acc.concat(room.structureTypes[next].map(id => room.structures[id])), []);
 }
