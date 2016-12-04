@@ -10,11 +10,10 @@ const getEnergyContainers = () => Utilities.findStructures()
   ));
 
 const getStorageNearSources = (room) => {
-  const sources = room.find(FIND_SOURCES);
   const containers = getEnergyContainers().filter(s => s.structureType !== STRUCTURE_STORAGE);
   if (containers.length === 0) { return []; }
-  const containersToEmpty = sources
-    .map(source => source.pos.findClosestByRange(containers))
+  const containersToEmpty = Object.values(room.memory.cache.sources)
+    .map(source => new RoomPosition(source.pos.x, source.pos.y, source.pos.roomName).findClosestByRange(containers))
     .sort((a, b) => (b.energy || (b.store && b.store[RESOURCE_ENERGY] || 0)) - (a.energy || (a.store && a.store[RESOURCE_ENERGY] || 0)));
   // Return deduped.
   return containersToEmpty

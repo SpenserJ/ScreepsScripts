@@ -2,8 +2,11 @@ import * as Utilities from './utilities';
 import * as Statistics from './statistics';
 import { getRoleUsage } from './roleManagement';
 import { log, debug } from './ScreepsCommander';
+import { updateCache } from './optimizations';
 
 export default () => {
+  updateCache();
+
   const Roles = {
     Harvester: require('../src/classes/units/Harvester').default,
     Builder: require('../src/classes/units/Builder').default,
