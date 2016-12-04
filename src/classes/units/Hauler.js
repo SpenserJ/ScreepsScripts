@@ -10,14 +10,12 @@ const getEnergyContainers = () => Utilities.findStructures()
   ));
 
 const getStorageNearSources = (room) => {
-  const containers = getEnergyContainers().filter(s => s.structureType !== STRUCTURE_STORAGE);
-  if (containers.length === 0) { return []; }
-  const containersToEmpty = Object.values(room.memory.cache.sources)
-    .map(source => new RoomPosition(source.pos.x, source.pos.y, source.pos.roomName).findClosestByRange(containers))
-    .sort((a, b) => (b.energy || (b.store && b.store[RESOURCE_ENERGY] || 0)) - (a.energy || (a.store && a.store[RESOURCE_ENERGY] || 0)));
-  // Return deduped.
-  return containersToEmpty
-    .filter((container, i) => containersToEmpty.indexOf(container) === i);
+  return Object.values(room.memory.cache.sources)
+    .reduce((acc, next) => acc.concat(next.nearbyContainers), [])
+    .filter((id, i, arr) => arr.indexOf(id) === i)
+    .map(id => room.memory.cache.structures[id])
+    .filter(structure => structure.store[RESOURCE_ENERGY] > 50)
+    .sort((a, b) => (b.store && b.store[RESOURCE_ENERGY] || 0) - (a.store && a.store[RESOURCE_ENERGY] || 0));
 }
 
 export default class Hauler extends BaseUnit {

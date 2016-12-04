@@ -5,14 +5,17 @@ const cacheLifetime = 100;
 // How many ticks should structure stats exist before they are updated?
 const structureStatLifetime = 10;
 
-const lookAround = (room, pos, lookTypes = null) => {
+const lookAround = (room, pos, lookTypes = null, range = 1) => {
   const around = {};
-  for (let checkIndex = 0; checkIndex < 9; checkIndex++) {
+  const perRow = range * 2 + 1
+  const indexSize = perRow * perRow;
+  const centerIndex = Math.floor(indexSize / 2);
+  for (let checkIndex = 0; checkIndex < indexSize; checkIndex++) {
     // Dont check the source itself.
-    if (checkIndex === 4) { continue; }
-    const checkXMod = (checkIndex % 3);
+    if (checkIndex === centerIndex) { continue; }
+    const checkXMod = (checkIndex % perRow);
     const checkX = (pos.x - 1 + checkXMod);
-    const checkY = (pos.y - 1 + (checkIndex - checkXMod) / 3);
+    const checkY = (pos.y - 1 + (checkIndex - checkXMod) / perRow);
     const atPos = room.lookAt(checkX, checkY, room.roomName);
     const filteredAtPos = (lookTypes && lookTypes.length)
       ? atPos.filter(found => lookTypes.includes(found.type))
@@ -31,7 +34,13 @@ const countWorkSpots = (room, pos) => {
       }).length;
     }).length;
 };
-countWorkSpots(Game.rooms.W7N3, Game.getObjectById('c12d077296e6ac9').pos);
+
+const findNearbyContainers = (room, pos, range = 1) => {
+  return Object.values(lookAround(room, pos, [LOOK_STRUCTURES], range))
+    .reduce((acc, next) => acc.concat(next), [])
+    .filter(s => s.structure.structureType === STRUCTURE_CONTAINER)
+    .map(s => s.structure.id);
+}
 
 const updateStructureStats = structureRaw => {
   const structure = {};
@@ -71,35 +80,6 @@ export const updateCache = () => {
     }
     const roomMem = Memory.rooms[room.name].cache;
 
-    // Check for all sources.
-    if (!roomMem.sources) {
-      const sources = {};
-      room.find(FIND_SOURCES).forEach(sourceRaw => {
-        const source = {};
-        // Keeper Lairs are dangerous! Avoid them at all costs.
-        source.lair = sourceRaw.pos.findInRange(FIND_STRUCTURES, 5, {
-          filter: s => s.structureType === STRUCTURE_KEEPER_LAIR,
-        }).length !== 0;
-
-        source.pos = sourceRaw.pos;
-        // Check for how many spots are walkable around the source.
-        source.workSpots = countWorkSpots(room, source.pos);
-        sources[sourceRaw.id] = source;
-      });
-      roomMem.sources = sources;
-    }
-
-    if (!roomMem.controller && room.controller) {
-      const controllerRaw = room.controller;
-      roomMem.controller = {
-        pos: controllerRaw.pos,
-        workSpots: countWorkSpots(room, controllerRaw.pos),
-        safeModeAvailable: controllerRaw.safeModeAvailable,
-        safeModeCooldown: controllerRaw.safeModeCooldown || 0,
-        upgradeBlocked: controllerRaw.upgradeBlocked || 0,
-      };
-    }
-
     if (!roomMem.structures) {
       const structures = {};
       const structureTypes = {};
@@ -133,15 +113,43 @@ export const updateCache = () => {
       }
     }
 
+    // Check for all sources.
+    if (!roomMem.sources) {
+      const sources = {};
+      room.find(FIND_SOURCES).forEach(sourceRaw => {
+        const source = {};
+        // Keeper Lairs are dangerous! Avoid them at all costs.
+        source.lair = sourceRaw.pos.findInRange(FIND_STRUCTURES, 5, {
+          filter: s => s.structureType === STRUCTURE_KEEPER_LAIR,
+        }).length !== 0;
+
+        source.pos = sourceRaw.pos;
+        // Check for how many spots are walkable around the source.
+        source.workSpots = countWorkSpots(room, source.pos);
+        source.nearbyContainers = findNearbyContainers(room, source.pos, 2);
+
+        sources[sourceRaw.id] = source;
+      });
+      roomMem.sources = sources;
+    }
+
+    if (!roomMem.controller && room.controller) {
+      const controllerRaw = room.controller;
+      roomMem.controller = {
+        pos: controllerRaw.pos,
+        workSpots: countWorkSpots(room, controllerRaw.pos),
+        safeModeAvailable: controllerRaw.safeModeAvailable,
+        safeModeCooldown: controllerRaw.safeModeCooldown || 0,
+        upgradeBlocked: controllerRaw.upgradeBlocked || 0,
+      };
+    }
+
     const spawns = roomMem.structureTypes[STRUCTURE_SPAWN];
     spawns.forEach(spawnId => {
       const spawn = roomMem.structures[spawnId];
-      if (spawn.nearbyContainers) { return; }
-
-      spawn.nearbyContainers = Object.values(lookAround(room, spawn.pos, [LOOK_STRUCTURES]))
-        .reduce((acc, next) => acc.concat(next), [])
-        .filter(s => s.structure.structureType === STRUCTURE_CONTAINER)
-        .map(s => s.structure.id);
+      if (!spawn.nearbyContainers) {
+        spawn.nearbyContainers = findNearbyContainers(room, spawn.pos);
+      }
     })
   });
 };

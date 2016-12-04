@@ -18,11 +18,15 @@ export default class Upgrader extends BaseUnit {
     if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
     if (creep.carry.energy == 0) {
-      const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity());
-      const storage = targets.filter(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE);
-      const closestTarget = creep.pos.findClosestByRange(storage.length ? storage : targets);
+      if (!creep.memory.target) {
+        const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity());
+        const storage = targets.filter(s => s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE);
+        creep.memory.target = creep.pos.findClosestByRange(storage.length ? storage : targets).id;
+      }
+      const closestTarget = Game.getObjectById(creep.memory.target);
       if (closestTarget) {
         this.withdrawEnergy(closestTarget);
+        delete creep.memory.target;
         return true;
       }
     } else {

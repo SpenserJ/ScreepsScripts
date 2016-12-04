@@ -56,9 +56,10 @@ export default class BaseUnit {
     }
   }
 
-  withdrawEnergy(target) {
+  withdrawEnergy(targetCache) {
     const creep = this.creep;
     const energy = creep.carryCapacity - _.sum(Object.values(creep.carry));
+    const target = Game.getObjectById(targetCache.id);
     const moveCloser = target.transferEnergy
       ? target.transferEnergy(creep)
       : creep.withdraw(target, RESOURCE_ENERGY);
