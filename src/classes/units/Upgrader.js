@@ -15,7 +15,7 @@ export default class Upgrader extends BaseUnit {
   static autospawnPriority = 1;
 
   run() {
-    if (super.run() === false) { return; }
+    if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
     if (creep.carry.energy == 0) {
       const targets = Utilities.findStorageWithExcess(creep.room.id, this.getCarryCapacity());

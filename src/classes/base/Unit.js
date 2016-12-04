@@ -72,50 +72,53 @@ export default class BaseUnit {
       }
     }
 
-    run() {
+    amIGoingToDie() {
+      return this.creep.ticksToLive < 350;
+    }
+
+    goDie() {
       const creep = this.creep;
-      if (creep.ticksToLive < 350 || creep.memory.idleTicks > 25) {
-        if (creep.carry[RESOURCE_ENERGY] !== 0) {
-          this.storeEnergy(creep.pos.findClosestByRange(findStorageWithSpace(creep.room.id)));
+      if (!this.amIGoingToDie() && creep.memory.idleTicks < 25) { return; }
+      if (creep.carry[RESOURCE_ENERGY] !== 0) {
+        this.storeEnergy(creep.pos.findClosestByRange(findStorageWithSpace(creep.room.id)));
+        return false;
+      }
+      const containers = findContainersNearSpawn(creep.room);
+      if (creep.ticksToLive % 5 === 0) {
+        console.log(`${creep.name} (${this.constructor.name}) is going to die in ${creep.ticksToLive} ticks`);
+      }
+      if (containers.length !== 0) {
+        if (!creep.memory.deathTarget) {
+          creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
+        }
+        let deathTarget = Game.getObjectById(creep.memory.deathTarget);
+
+        // If the target is null, it has been destroyed since we selected it.
+        if (deathTarget === null) {
+          creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
           return false;
         }
-        const containers = findContainersNearSpawn(creep.room);
-        if (creep.ticksToLive % 5 === 0) {
-          console.log(`${creep.name} (${this.constructor.name}) is going to die in ${creep.ticksToLive} ticks`);
-        }
-        if (containers.length !== 0) {
-          if (!creep.memory.deathTarget) {
-            creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
-          }
-          let deathTarget = Game.getObjectById(creep.memory.deathTarget);
 
-          // If the target is null, it has been destroyed since we selected it.
-          if (deathTarget === null) {
-            creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
-            return false;
-          }
-
-          if (deathTarget.pos.roomName === creep.pos.roomName &&
-              deathTarget.pos.x === creep.pos.x &&
-              deathTarget.pos.y === creep.pos.y) {
-            // TODO: This should deposit all resources!
-            if (creep.carry[RESOURCE_ENERGY] > 0) {
-              this.storeEnergy(deathTarget);
-            } else {
-              console.log(`Recycling ${creep.name} (${this.constructor.name})`)
-              getSpawn().recycleCreep(creep);
-            }
+        if (deathTarget.pos.roomName === creep.pos.roomName &&
+            deathTarget.pos.x === creep.pos.x &&
+            deathTarget.pos.y === creep.pos.y) {
+          // TODO: This should deposit all resources!
+          if (creep.carry[RESOURCE_ENERGY] > 0) {
+            this.storeEnergy(deathTarget);
           } else {
-            const atDeathTarget = creep.room.lookAt(deathTarget.pos.x, deathTarget.pos.y)
-              .filter(el => el.type === 'creep');
-            if (atDeathTarget.length > 0) {
-              creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
-            } else {
-              creep.moveTo(deathTarget);
-            }
+            console.log(`Recycling ${creep.name} (${this.constructor.name})`)
+            getSpawn().recycleCreep(creep);
           }
-          return false;
+        } else {
+          const atDeathTarget = creep.room.lookAt(deathTarget.pos.x, deathTarget.pos.y)
+            .filter(el => el.type === 'creep');
+          if (atDeathTarget.length > 0) {
+            creep.memory.deathTarget = containers[Math.floor(Math.random() * containers.length)].id;
+          } else {
+            creep.moveTo(deathTarget);
+          }
         }
+        return false;
       }
     }
 }

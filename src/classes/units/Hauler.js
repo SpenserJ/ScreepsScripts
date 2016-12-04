@@ -54,7 +54,7 @@ export default class Hauler extends BaseUnit {
   static canReassign = false;
 
   run() {
-    if (super.run() === false) { return; }
+    if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
 
     var spawnStorage = creep.room.find(FIND_STRUCTURES, {

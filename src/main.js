@@ -62,6 +62,7 @@ creeps.forEach(creep => {
   } else {
     creepMemory.idleTicks = Math.max(creepMemory.idleTicks - 1, 0) || 0;
   }
+  creep.goDie();
 });
 
 if (Utilities.getSpawn().spawning === null && Object.keys(reassignableRoles).length === 0) {

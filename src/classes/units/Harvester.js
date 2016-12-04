@@ -23,7 +23,7 @@ export default class Harvester extends BaseUnit {
   }
 
   run() {
-    if (super.run() === false) { return; }
+    if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
 
     // Determine which source to use

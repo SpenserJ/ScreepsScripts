@@ -16,7 +16,7 @@ export default class Builder extends BaseUnit {
   static autospawnPriority = 0;
 
   run() {
-    if (super.run() === false) { return; }
+    if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
     if(creep.memory.building && creep.carry.energy == 0) {
       creep.memory.building = false;
