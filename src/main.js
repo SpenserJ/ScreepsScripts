@@ -5,9 +5,13 @@ const profiler = require('screeps-profiler');
 if (profilerEnabled) { profiler.enable(); }
 
 import loop from './loop';
-import { logBatched } from './ScreepsCommander.js';
+import { log, logBatched } from './ScreepsCommander.js';
 
-if (profilerEnabled) { profiler.wrap(loop); }
-else { loop(); }
+if (profilerEnabled) {
+  profiler.wrap(loop);
+  if (Game.time === Memory.profiler.disableTick) {
+    log('profiler', { lines: profiler.output() });
+  }
+} else { loop(); }
 
 logBatched();
