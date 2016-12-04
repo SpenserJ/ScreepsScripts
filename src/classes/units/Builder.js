@@ -1,13 +1,18 @@
 import BaseUnit from '../base/Unit';
 import * as Utilities from '../../utilities';
 
+const findConstructionSites = room => {
+  return Object.values(room.constructionSites);
+}
+
 export default class Builder extends BaseUnit {
   static minimumUnits = () => {
     const requested = (() => {
       if (Utilities.getTotalEnergyForSpawn() < 300) { return 0; }
       const needRepair = Utilities.structuresNeedingRepair().length;
       if (needRepair > 0) { return  Math.ceil(needRepair / 2); }
-      const needBuild = Utilities.findConstructionSites().length;
+      const needBuild = Object.values(Memory.rooms)
+        .reduce((acc, next) => (acc + findConstructionSites(next.cache).length), 0);
       if (needBuild > 0) { return needBuild * 2; }
       return 0;
     })();
@@ -35,12 +40,8 @@ export default class Builder extends BaseUnit {
         return true;
       }
 
-      var targets = Utilities.findConstructionSites()
-        .sort((a, b) => {
-          return ((a.progress / a.progressTotal) > (b.progress / b.progressTotal))
-            ? -1
-            : 1;
-        });
+      var targets = findConstructionSites(creep.room.memory.cache)
+        .sort((a, b) => ((a.progress / a.progressTotal) > (b.progress / b.progressTotal)) ? -1 : 1);
       if (targets.length === 0) { return false; }
       if(creep.build(targets[0]) == ERR_NOT_IN_RANGE) {
         creep.moveTo(targets[0], { reusePath: 5 });

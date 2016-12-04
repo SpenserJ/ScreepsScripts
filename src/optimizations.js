@@ -62,6 +62,11 @@ const updateStructureStats = structureRaw => {
   return structure;
 };
 
+const updateConstructionStats = siteRaw => ({
+  progress: siteRaw.progress,
+  progressTotal: siteRaw.progressTotal,
+});
+
 export const updateCache = () => {
   if (typeof Memory.lastCacheRebuild === 'undefined') { Memory.lastCacheRebuild = 1; }
   const resetCache = (Memory.lastCacheRebuild >= cacheLifetime);
@@ -106,13 +111,36 @@ export const updateCache = () => {
       if (rescan.length !== 0) {
         console.log('Rescanning', rescan.length, 'stale structures');
         rescan.forEach(id => {
-          roomMem.structures[id] = Object.assign(
+          Object.assign(
             roomMem.structures[id],
             updateStructureStats(Game.getObjectById(id))
           );
         });
         roomMem.structuresNeedingRecheck = [];
       }
+    }
+
+    if (!roomMem.constructionSites) {
+      const constructionSites = {};
+      room.find(FIND_CONSTRUCTION_SITES).forEach(siteRaw => {
+        constructionSites[siteRaw.id] = {
+          id: siteRaw.id,
+          my: siteRaw.my,
+          structureType: siteRaw.structureType,
+          pos: siteRaw.pos,
+          ...updateConstructionStats(siteRaw),
+        };
+      });
+      roomMem.constructionSites = constructionSites;
+    } else {
+      Object.keys(roomMem.constructionSites).forEach(id => {
+        const site = Game.getObjectById(id);
+        if (site) {
+          Object.assign(roomMem.constructionSites[id], updateConstructionStats(site));
+        } else {
+          delete roomMem.constructionSites[id];
+        }
+      });
     }
 
     // Check for all sources.

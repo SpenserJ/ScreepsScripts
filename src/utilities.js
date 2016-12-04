@@ -18,7 +18,6 @@ export const structuresNeedingRepair = room => getRoom(room)
     return percentA - percentB;
   });
 
-export const findConstructionSites = room => getRoom(room).find(FIND_CONSTRUCTION_SITES);
 export const findStructures = room => getRoom(room).find(FIND_STRUCTURES);
 const storageStructures = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
 export const findStorage = room => getRoom(room)
