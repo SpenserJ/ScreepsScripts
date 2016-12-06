@@ -26,14 +26,6 @@ export const findStorageWithSpace = room => findStorage(room)
   .filter(s => s.store
     ? (Object.values(s.store).reduce((acc, next) => (acc + next), 0) < s.storeCapacity)
     : (s.energy < s.energyCapacity));
-export const findSpawnStorage = room => getRoom(room)
-  .find(FIND_STRUCTURES, {
-    filter: s => (s.structureType === STRUCTURE_SPAWN || s.structureType === STRUCTURE_EXTENSION),
-  });
-export const findNonSpawnStorage = room => getRoom(room)
-  .find(FIND_STRUCTURES, {
-    filter: s => (s.structureType === STRUCTURE_CONTAINER || s.structureType === STRUCTURE_STORAGE),
-  });
 
 export const debounceByInterval = (func, interval = 5) => {
   if (Game.time % interval === 0) { func(); }
@@ -60,6 +52,6 @@ export const getStructures = (roomProvided, types) => {
       .reduce((acc, next) => acc.concat(room.structureTypes[next].map(id => room.structures[id])), []);
 }
 export const sortByRange = creep => (a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y);
-export const findStorageWithExcess = (room, amount = CARRY_CAPACITY, includeSpawnable = false) =>
-getStructures(room, includeSpawnable ? [STRUCTURE_CONTAINER, STRUCTURE_STORAGE] : null)
-.filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount * 5);
+export const findStorageWithExcess = (room, amount = CARRY_CAPACITY * 5, includeSpawnable = false) =>
+  getStructures(room, includeSpawnable ? [STRUCTURE_CONTAINER, STRUCTURE_STORAGE] : null)
+    .filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount);

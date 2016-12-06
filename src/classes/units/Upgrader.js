@@ -28,13 +28,13 @@ export default class Upgrader extends BaseUnit {
     if (creep.carry.energy == 0) {
       if (!creep.memory.target) {
         const storage = Utilities
-          .findStorageWithExcess(creep.room, this.getCarryCapacity())
+          .findStorageWithExcess(creep.room, this.getCarryCapacity() * 5)
           .sort(Utilities.sortByRange(creep));
         if (storage.length) {
           creep.memory.target = storage[0].id;
         } else {
           const targets = Utilities
-            .findStorageWithExcess(creep.room, this.getCarryCapacity(), true)
+            .findStorageWithExcess(creep.room, this.getCarryCapacity() * 5, true)
             .sort(Utilities.sortByRange(creep));
           creep.memory.target = targets[0].id;
         }

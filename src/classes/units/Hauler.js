@@ -18,17 +18,21 @@ const getStorageNearSources = (room) => {
     .sort((a, b) => (b.store && b.store[RESOURCE_ENERGY] || 0) - (a.store && a.store[RESOURCE_ENERGY] || 0));
 }
 
+const getSpawnStorage = room => Utilities
+  .getStructures(room, [STRUCTURE_EXTENSION, STRUCTURE_SPAWN])
+  .filter(s => s.energy < s.energyCapacity);
+
 const getTowersNeedingFill = room => Utilities.getStructures(room, STRUCTURE_TOWER)
   .filter(tower => tower.energy < tower.energyCapacity);
 
 export default class Hauler extends BaseUnit {
   static minimumUnits = () => {
-    const usableEnergy = Utilities.findNonSpawnStorage()
-      .filter(s => s.store[RESOURCE_ENERGY] > 0)
-      .reduce((acc, next) => (acc + next.store[RESOURCE_ENERGY]), 0);
+    const usableEnergy = Object.keys(Memory.rooms)
+      .reduce((acc, next) => (acc + Utilities.findStorageWithExcess(next, CARRY_CAPACITY).length), 0);
+
     // Get spawn refills
-    const spawnRefills = Utilities.findSpawnStorage()
-      .filter(s => s.energy < s.energyCapacity).length;
+    const spawnRefills = Object.keys(Memory.rooms)
+      .reduce((acc, next) => (acc + getSpawnStorage(next).length), 0);
 
     // Get tower refills
     const towersNeedingFill = Object.keys(Memory.rooms)
@@ -57,9 +61,7 @@ export default class Hauler extends BaseUnit {
     if (this.amIGoingToDie()) { return; }
     const creep = this.creep;
 
-    const spawnStorage = Utilities
-      .getStructures(creep.room, [STRUCTURE_EXTENSION, STRUCTURE_SPAWN])
-      .filter(s => s.energy < s.energyCapacity)
+    const spawnStorage = getSpawnStorage(creep.room)
       .sort((a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y));
 
     const towers = getTowersNeedingFill(creep.room)
