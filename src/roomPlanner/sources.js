@@ -44,6 +44,7 @@ export default (roomName, roomMem) => {
           pos: { x: closestSpots[0].x, y: closestSpots[0].y, roomName },
           id: room.lookForAt(LOOK_CONSTRUCTION_SITES, closestSpots[0].x, closestSpots[0].y)[0].id,
         },
+        required: 2,
       });
       // TODO: This should push the new construction site into memory.
     });

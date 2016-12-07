@@ -4,6 +4,7 @@ export default (room, resetCache) => {
     Memory.rooms[room.name].cache = {
       name: room.name,
       structuresNeedingRecheck: [],
+      roles: {},
     };
   }
 };

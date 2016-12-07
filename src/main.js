@@ -47,7 +47,7 @@ const trueLoop = () => {
     const spawns = getStructures(roomName, 'spawn');
     if (spawns.length === 0) { return; }
 
-    var newName = Game.getObjectById(spawns[0].id).createCreep(
+    const newName = Game.getObjectById(spawns[0].id).createCreep(
       //ClassType.decideCreepParts(ClassType),
       [WORK, CARRY, MOVE],
       uid(),
@@ -60,6 +60,22 @@ const trueLoop = () => {
 
   initializeCoordinator();
   roomPlanner();
+
+  // Remove old creeps.
+  for (var name in Memory.creeps) {
+    if(!Game.creeps[name]) {
+      const creepMem = Memory.creeps[name];
+      const roomMem = Memory.rooms[creepMem.originalRoom];
+      // Remove any task assignments that the creeps had.
+      if (roomMem) {
+        if (creepMem.task && roomMem.coordinator[creepMem.task]) {
+          roomMem.coordinator[creepMem.task].allocated--;
+        }
+      }
+      delete Memory.creeps[name];
+      console.log('Clearing non-existing creep memory:', name);
+    }
+  }
 
   Object.values(Game.creeps).forEach(creep => {
     Roles[creep.memory.role].run(creep);

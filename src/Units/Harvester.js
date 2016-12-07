@@ -28,13 +28,13 @@ const CreepDefinition = {
         .sort(([, countA], [, countB]) => countA - countB)[0][0];
     }
 
-    if (creep.memory.task !== 'deposit' && creep.carry.energy === creep.carryCapacity) {
-      creep.memory.task = 'deposit';
+    if (creep.memory.action !== 'deposit' && creep.carry.energy === creep.carryCapacity) {
+      creep.memory.action = 'deposit';
     } else if (creep.carry.energy === 0) {
-      creep.memory.task = 'harvest';
+      creep.memory.action = 'harvest';
     }
 
-    if (creep.memory.task === 'harvest') {
+    if (creep.memory.action === 'harvest') {
       var source = Game.getObjectById(creep.memory.sourceId);
       const result = creep.harvest(source);
       if (result === ERR_NOT_IN_RANGE) { creep.moveTo(source, { reusePath: 5 }); }
