@@ -4,7 +4,8 @@ var path = require('path');
 module.exports = {
   entry: './src/main.js',
   output: {
-    filename: 'main.js'
+    filename: 'main.js',
+    libraryTarget: 'commonjs2',
   },
   plugins: [
     new webpack.optimize.UglifyJsPlugin({

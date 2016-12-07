@@ -182,6 +182,6 @@ export const updateCache = () => {
       if (!spawn.nearbyContainers) {
         spawn.nearbyContainers = findNearbyContainers(room, spawn.pos);
       }
-    })
+    });
   });
 };

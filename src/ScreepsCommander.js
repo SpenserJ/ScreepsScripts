@@ -1,4 +1,4 @@
-const batchedMessages = [];
+let batchedMessages = [];
 
 export const log = (type, payload = {}) => {
   const message = {
@@ -18,4 +18,5 @@ export const debug = (...message) => {
 export const logBatched = () => {
   if (batchedMessages.length === 0) { return; }
   console.log('COMMANDER:', JSON.stringify(batchedMessages));
+  batchedMessages = [];
 }

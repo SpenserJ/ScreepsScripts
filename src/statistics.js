@@ -1,6 +1,4 @@
-import _ from 'lodash';
-
-import * as Utilities from './utilities';
+import { getTotalEnergy, getEnergyCapacity, sum } from './utilities';
 import { log, debug } from './ScreepsCommander.js';
 
 const updateStatisticOnTick = (stat, value, limit = 10) => {
@@ -15,15 +13,15 @@ export const appendToTickStat = (stat, value) => {
 }
 
 export const getStatAverage = stat => {
-  const flattened = Memory.statistics[stat].map(tick => Array.isArray(tick) ? _.sum(tick) : tick);
-  return _.sum(flattened) / flattened.length;
+  const flattened = Memory.statistics[stat].map(tick => Array.isArray(tick) ? sum(tick) : tick);
+  return sum(flattened) / flattened.length;
 }
 
 export const track = () => {
   if (typeof Memory.statistics === 'undefined') { Memory.statistics = {}; }
   const stats = Memory.statistics;
-  updateStatisticOnTick('energyTotal', Utilities.getTotalEnergy());
-  updateStatisticOnTick('energyCapacity', Utilities.getEnergyCapacity());
+  updateStatisticOnTick('energyTotal', getTotalEnergy());
+  updateStatisticOnTick('energyCapacity', getEnergyCapacity());
   updateStatisticOnTick('energyUsage', [[]], 50);
   updateStatisticOnTick('cpuUsage', Game.cpu.getUsed());
   updateStatisticOnTick('cpuLimit', Game.cpu.limit);
