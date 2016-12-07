@@ -10,6 +10,8 @@ import { log, logBatched } from './ScreepsCommander';
 import { updateCache } from './cache/';
 import { debounceByInterval, getStructures, uid } from './utilities';
 import { report as reportStatistics } from './statistics';
+import { initializeCoordinator } from './unitCoordinator';
+import roomPlanner from './roomPlanner/';
 
 // Helper scripts that I may want to use/modify/improve
 import './potentialHelpers/roomStatus';
@@ -18,10 +20,10 @@ import './potentialHelpers/roomStatus';
 const Roles = {
   Harvester: require('./Units/Harvester').default,
   Upgrader: require('./Units/Upgrader').default,
+  Builder: require('./Units/Builder').default,
 }
 
 const trueLoop = () => {
-  console.log('Script running loop');
   updateCache();
 
   // Logic goes here
@@ -55,6 +57,9 @@ const trueLoop = () => {
     //appendToTickStat('energyUsage', creepCost);
     console.log(`Spawning new ${spawnClass} with ??? energy: ${newName}`);
   });
+
+  initializeCoordinator();
+  roomPlanner();
 
   Object.values(Game.creeps).forEach(creep => {
     Roles[creep.memory.role].run(creep);

@@ -1,4 +1,5 @@
 import { sum } from '../utilities';
+import { appendToTickStat } from '../statistics';
 
 const CreepDefinition = {
   name: 'BaseUnit',
@@ -21,8 +22,7 @@ Creep.prototype.storeEnergy = function storeEnergy(target) {
     creep.moveTo(target, { reusePath: 5 });
   } else {
     // TODO: This doesn't account for almost-full containers
-    //appendToTickStat('energyUsage', energy);
-    console.log(target);
+    appendToTickStat('energyUsage', energy);
     if (target) {
       creep.room.memory.cache.structuresNeedingRecheck.push(target.id);
     } else {
@@ -42,7 +42,7 @@ Creep.prototype.withdrawEnergy = function withdrawEnergy(targetCache) {
     creep.moveTo(target, { reusePath: 5 });
   } else {
     // TODO: This doesn't account for almost-empty containers
-    //appendToTickStat('energyUsage', -energy);
+    appendToTickStat('energyUsage', -energy);
     if (target) {
       creep.room.memory.cache.structuresNeedingRecheck.push(target.id);
     } else {
@@ -60,4 +60,8 @@ Creep.prototype.changeRole = function changeRole(newRole) {
   // Set the creep's new role.
   creepMem.role = newRole;
   roomMem.roles[newRole].push(creep.id);
+};
+
+Creep.prototype.getCarryCapacity = function getCarryCapacity() {
+  return this.body.filter(part => part.type === CARRY).length * CARRY_CAPACITY;
 };

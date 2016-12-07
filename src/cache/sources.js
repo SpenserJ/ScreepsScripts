@@ -5,7 +5,9 @@ export default room => {
   if (!roomMem.sources) {
     const sources = {};
     room.find(FIND_SOURCES).forEach(sourceRaw => {
-      const source = {};
+      const source = {
+        id: sourceRaw.id,
+      };
       // Keeper Lairs are dangerous! Avoid them at all costs.
       source.lair = sourceRaw.pos.findInRange(FIND_STRUCTURES, 5, {
         filter: s => s.structureType === STRUCTURE_KEEPER_LAIR,
