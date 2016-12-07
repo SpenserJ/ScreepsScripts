@@ -5,6 +5,7 @@ import cacheConstructionSites from './constructionSites';
 import cacheSources from './sources';
 import cacheSpawns from './spawns';
 import cacheController from './controller';
+import cacheCreeps from './creeps';
 
 import { cacheLifetime } from '../config';
 
@@ -29,4 +30,6 @@ export const updateCache = () => {
 
     cacheController(room);
   });
+
+  cacheCreeps();
 };

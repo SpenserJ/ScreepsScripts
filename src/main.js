@@ -26,32 +26,19 @@ const trueLoop = () => {
 
   // Logic goes here
 
-  // Count the unit types in each room
-  const unitsPerRoom = {};
-  Object.entries(Memory.rooms).forEach(([roomName, room]) => {
-    if (typeof unitsPerRoom[roomName] === 'undefined') {
-      unitsPerRoom[roomName] = {};
-    }
-  });
-  Object.values(Game.creeps).forEach(creep => {
-    const roomUnits = unitsPerRoom[creep.pos.roomName];
-    const role = creep.memory.role;
-    roomUnits[role] = (roomUnits[role] + 1) || 1;
-  });
-
   let unitTypeToSpawn = {};
   Object.entries(Memory.rooms).forEach(([roomName, room]) => {
+    const roomMem = room.cache;
     unitTypeToSpawn[roomName] = false;
     Object.entries(Roles).forEach(([name, definition]) => {
       if (unitTypeToSpawn[roomName] !== false) { return; }
-      const needsSpawn = definition.requiredUnits(room);
-      // TODO: This should compare to the current unit count.
-      if (needsSpawn > 0 && needsSpawn > (unitsPerRoom[roomName][name] || 0)) {
+      const needsSpawn = definition.requiredUnits(roomMem);
+      // TODO: This should add spawnable units to a list, and sort by priority.
+      if (needsSpawn > 0 && needsSpawn > (roomMem.roles[name] || []).length) {
         unitTypeToSpawn[roomName] = name;
       }
     });
   });
-  console.log('Units to spawn', JSON.stringify(unitTypeToSpawn));
 
   Object.entries(unitTypeToSpawn).forEach(([roomName, spawnClass]) => {
     if (spawnClass === false) { return; }

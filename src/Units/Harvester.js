@@ -1,14 +1,13 @@
 import BaseDefinition from './Base';
-import { findStorageWithSpace, sortByRange } from '../utilities';
+import { findStorageWithSpace, sortByRange, getStructures } from '../utilities';
 
 const CreepDefinition = {
   ...BaseDefinition,
 
   name: 'Harvester',
 
-  requiredUnits: room => {
-    return 4;
-  },
+  requiredUnits: room =>
+    Object.values(room.sources).reduce((acc, next) => (acc + next.workSpots), 0),
 
   run: creep => {
     if (!creep.memory.sourceId) {

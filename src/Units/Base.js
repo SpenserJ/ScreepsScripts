@@ -29,9 +29,9 @@ Creep.prototype.storeEnergy = function storeEnergy(target) {
       console.log('Missing target for storeEnergy');
     }
   }
-}
+};
 
-Creep.prototype.withdrawEnergy = function storeEnergy(targetCache) {
+Creep.prototype.withdrawEnergy = function withdrawEnergy(targetCache) {
   const creep = this;
   const energy = creep.carryCapacity - sum(Object.values(creep.carry));
   const target = Game.getObjectById(targetCache.id);
@@ -49,4 +49,15 @@ Creep.prototype.withdrawEnergy = function storeEnergy(targetCache) {
       console.log('Missing target for storeEnergy');
     }
   }
-}
+};
+
+Creep.prototype.changeRole = function changeRole(newRole) {
+  const creep = this;
+  const creepMem = creep.memory;
+  const roomMem = Memory.rooms[creepMem.originalRoom].cache;
+  // Remove the creep from the old room role.
+  roomMem.roles[creepMem.role] = roomMem.roles[creepMem.role].filter(id => !creep.id);
+  // Set the creep's new role.
+  creepMem.role = newRole;
+  roomMem.roles[newRole].push(creep.id);
+};
