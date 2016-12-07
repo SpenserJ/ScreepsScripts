@@ -6,7 +6,7 @@ export const taskExists = (room, reference = {}) => {
     console.log('Rejecting task check due to invalid references');
     return true;
   }
-  return Object.values(room.coordinator || room.memory.coordinator)
+  const task = Object.values(room.coordinator || room.memory.coordinator)
     // TODO: Make this filter work like any(pred)
     .filter(task => {
       const taskReference = task.reference || {};
@@ -17,8 +17,8 @@ export const taskExists = (room, reference = {}) => {
       return Object.entries(taskReference)
         .filter(([key, value]) => reference[key] != value)
         .length === 0;
-    })
-    .length !== 0;
+    });
+  return (task.length === 0) ? false : task[0];
 };
 
 
@@ -52,8 +52,20 @@ export const createTask = (room, task) => {
 };
 
 export const initializeCoordinator = () => {
-  Object.entries(Memory.rooms).forEach(([roomName, room]) => {
+  Object.entries(Memory.rooms).forEach(([roomName, roomMem]) => {
+    const room = Game.rooms[roomName];
     //delete room.coordinator;
-    if (!room.coordinator) { room.coordinator = {}; }
+    if (!roomMem.coordinator) { roomMem.coordinator = {}; }
+    Object.entries(roomMem.coordinator).forEach(([id, task]) => {
+      if (task.task.action === 'build') {
+        if (!Game.getObjectById(task.task.id)) {
+          // Construction site has been deleted, or task has been completed.
+          console.log('Clearing completed build task', id);
+          room.lookForAt(LOOK_STRUCTURES, task.task.pos.x, task.task.pos.y)
+            .forEach(s => roomMem.cache.structuresNeedingRecheck.push(s.id));
+          delete roomMem.coordinator[id];
+        }
+      }
+    })
   });
 };
