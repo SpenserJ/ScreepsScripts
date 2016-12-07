@@ -1,6 +1,6 @@
 import BaseDefinition from './Base';
 import { findStorageWithExcess, sortByRange } from '../utilities';
-import { getTask } from '../unitCoordinator';
+import { getTask, countRequiredCreepsForTasks } from '../unitCoordinator';
 
 const CreepDefinition = {
   ...BaseDefinition,
@@ -8,7 +8,10 @@ const CreepDefinition = {
   name: 'Builder',
 
   requiredUnits: room => {
-    return 1;
+    // TODO: Improve this logic
+    // This isn't perfect, as it will only return how many more are required.
+    // When a creep dies, this number will go up until we've spawned another creep.
+    return Math.min(4, countRequiredCreepsForTasks(room, 'build'));
   },
 
   run: creep => {

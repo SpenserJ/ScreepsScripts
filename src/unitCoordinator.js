@@ -69,3 +69,10 @@ export const initializeCoordinator = () => {
     })
   });
 };
+
+export const countRequiredCreepsForTasks = (roomRaw, taskAction) => {
+  const room = (roomRaw.name ? Game.rooms[roomRaw.name] : roomRaw).memory;
+  return Object.entries(room.coordinator || room.memory.coordinator)
+    .filter(task => (task.allocated < task.required) && task.task.action === taskAction)
+    .reduce((acc, next) => (acc + (next.required - next.allocated)), 0);
+}
