@@ -7,7 +7,7 @@ const profiler = require('screeps-profiler');
 if (profilerEnabled) { profiler.enable(); }
 
 import { log, logBatched } from './ScreepsCommander';
-import { updateCache } from './optimizations';
+import { updateCache } from './cache/';
 import { debounceByInterval, getStructures, uid } from './utilities';
 import { report as reportStatistics } from './statistics';
 
