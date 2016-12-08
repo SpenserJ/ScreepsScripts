@@ -8,10 +8,8 @@ const CreepDefinition = {
   name: 'Builder',
 
   requiredUnits: room => {
-    // TODO: Improve this logic
-    // This isn't perfect, as it will only return how many more are required.
-    // When a creep dies, this number will go up until we've spawned another creep.
-    return Math.min(4, countRequiredCreepsForTasks(room, 'build'));
+    const stillNeeded = countRequiredCreepsForTasks(room, 'build');
+    return Math.min(4, (stillNeeded + (room.roles[CreepDefinition.name] || []).length));
   },
 
   run: creep => {

@@ -54,7 +54,7 @@ export const createTask = (room, task) => {
 export const initializeCoordinator = () => {
   Object.entries(Memory.rooms).forEach(([roomName, roomMem]) => {
     const room = Game.rooms[roomName];
-    //delete room.coordinator;
+    //delete roomMem.coordinator;
     if (!roomMem.coordinator) { roomMem.coordinator = {}; }
     Object.entries(roomMem.coordinator).forEach(([id, task]) => {
       if (task.task.action === 'build') {
@@ -72,7 +72,7 @@ export const initializeCoordinator = () => {
 
 export const countRequiredCreepsForTasks = (roomRaw, taskAction) => {
   const room = (roomRaw.name ? Game.rooms[roomRaw.name] : roomRaw).memory;
-  return Object.entries(room.coordinator || room.memory.coordinator)
+  return Object.values(room.coordinator || room.memory.coordinator)
     .filter(task => (task.allocated < task.required) && task.task.action === taskAction)
     .reduce((acc, next) => (acc + (next.required - next.allocated)), 0);
 }

@@ -43,7 +43,7 @@ const CreepDefinition = {
     else {
       const rangeSort = sortByRange(creep);
       var targets = findStorageWithSpace(creep.room.name)
-        .sort((a, b) => a.structureType === STRUCTURE_CONTAINER ? 1 : rangeSort(a, b));
+        .sort((a, b) => a.structureType === STRUCTURE_CONTAINER ? -1 : rangeSort(a, b));
       if(targets.length > 0) {
         creep.storeEnergy(Game.getObjectById(targets[0].id));
       }

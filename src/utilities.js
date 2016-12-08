@@ -40,7 +40,7 @@ export const getEnergyCapacityForSpawn = room => getRoom(room).energyCapacityAva
 
 const storageStructures = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
 // TODO: Rewrite this!
-export const findStorageWithSpace = room => getStructures(room, storageStructures)
+export const findStorageWithSpace = (room, storageType = storageStructures) => getStructures(room, storageType)
   .filter(s => s.store
     ? (Object.values(s.store).reduce((acc, next) => (acc + next), 0) < s.storeCapacity)
     : (s.energy < s.energyCapacity));

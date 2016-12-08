@@ -44,18 +44,20 @@ const trueLoop = () => {
 
   Object.entries(unitTypeToSpawn).forEach(([roomName, spawnClass]) => {
     if (spawnClass === false) { return; }
-    const spawns = getStructures(roomName, 'spawn');
-    if (spawns.length === 0) { return; }
+    getStructures(roomName, 'spawn').forEach(spawn => {
+      const spawnRaw = Game.getObjectById(spawn.id);
+      if (spawnRaw.spawning) { return; }
 
-    const newName = Game.getObjectById(spawns[0].id).createCreep(
-      //ClassType.decideCreepParts(ClassType),
-      [WORK, CARRY, MOVE],
-      uid(),
-      { role: spawnClass, originalRole: spawnClass, originalRoom: roomName }
-    );
-    //const creepCost = calculateCreepCost(ClassType.decideCreepParts(ClassType))
-    //appendToTickStat('energyUsage', creepCost);
-    console.log(`Spawning new ${spawnClass} with ??? energy: ${newName}`);
+      const newName = spawnRaw.createCreep(
+        //ClassType.decideCreepParts(ClassType),
+        [WORK, CARRY, MOVE],
+        uid(),
+        { role: spawnClass, originalRole: spawnClass, originalRoom: roomName }
+      );
+      //const creepCost = calculateCreepCost(ClassType.decideCreepParts(ClassType))
+      //appendToTickStat('energyUsage', creepCost);
+      console.log(`Spawning new ${spawnClass} with ??? energy: ${newName}`);
+    });
   });
 
   initializeCoordinator();

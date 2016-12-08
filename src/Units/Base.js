@@ -56,7 +56,7 @@ Creep.prototype.changeRole = function changeRole(newRole) {
   const creepMem = creep.memory;
   const roomMem = Memory.rooms[creepMem.originalRoom].cache;
   // Remove the creep from the old room role.
-  roomMem.roles[creepMem.role] = roomMem.roles[creepMem.role].filter(id => !creep.id);
+  roomMem.roles[creepMem.role] = (roomMem.roles[creepMem.role] || []).filter(id => !creep.id);
   // Set the creep's new role.
   creepMem.role = newRole;
   roomMem.roles[newRole].push(creep.id);
