@@ -52,7 +52,8 @@ export const createTask = (room, task) => {
 };
 
 export const deleteTask = (room, task) => {
-  const taskID = task.id || task;
+  const taskID = (task && task.id || task);
+  if (!task) { return; }
   delete (room.coordinator || room.memory.coordinator)[taskID];
 }
 
@@ -68,11 +69,13 @@ export const initializeCoordinator = () => {
           console.log('Clearing completed build task', id);
           room.lookForAt(LOOK_STRUCTURES, task.task.pos.x, task.task.pos.y)
             .forEach(s => roomMem.cache.structuresNeedingRecheck.push(s.id));
-          delete roomMem.coordinator[id];
+          deleteTask(roomMem, id);
         }
       }
     })
   });
+
+
 };
 
 export const countRequiredCreepsForTasks = (roomRaw, taskAction) => {

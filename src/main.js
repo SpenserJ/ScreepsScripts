@@ -31,6 +31,9 @@ const Structures = {
 const trueLoop = () => {
   updateCache();
 
+  // TODO: Disable this once I trust it
+  PathFinder.use(false);
+
   // Logic goes here
 
   let unitTypeToSpawn = {};
