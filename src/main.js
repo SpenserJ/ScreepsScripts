@@ -21,6 +21,7 @@ const Roles = {
   Harvester: require('./Units/Harvester').default,
   Upgrader: require('./Units/Upgrader').default,
   Builder: require('./Units/Builder').default,
+  Hauler: require('./Units/Hauler').default,
 }
 
 const trueLoop = () => {
