@@ -1,5 +1,4 @@
 /*
-export const getRoom = (id = Object.keys(Game.rooms)[0]) => Game.rooms[id];
 export const getSpawn = room => {
   const fullRoom = getRoom(room)
   return Object.values(Game.spawns).filter(s => s.pos.roomName === fullRoom.name)[0];
@@ -34,9 +33,11 @@ export const getTotalEnergy = room => findStorage(room)
 export const getEnergyCapacity = room => findStorage(room)
   .reduce((acc, next) => (acc + (next.storeCapacity || next.energyCapacity || 0)), 0);
 
+  */
+
+export const getRoom = (id = Object.keys(Game.rooms)[0]) => Game.rooms[id];
 export const getTotalEnergyForSpawn = room => getRoom(room).energyAvailable;
 export const getEnergyCapacityForSpawn = room => getRoom(room).energyCapacityAvailable;
-*/
 
 const storageStructures = [STRUCTURE_EXTENSION, STRUCTURE_SPAWN, STRUCTURE_CONTAINER, STRUCTURE_STORAGE];
 // TODO: Rewrite this!

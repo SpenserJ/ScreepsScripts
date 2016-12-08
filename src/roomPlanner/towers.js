@@ -9,9 +9,9 @@ export default (roomName, roomMem) => {
   const towersNeedingFill = getStructures(roomName, STRUCTURE_TOWER)
     .filter(tower => tower.energy < tower.energyCapacity);
 
-  if (existingTask && towersNeedingFill.length === 0) {
+  if (towersNeedingFill.length === 0) {
     // If no towers need fill, delete the task.
-    deleteTask(room, existingTask);
+    if (existingTask) { deleteTask(room, existingTask); }
     return;
   }
 

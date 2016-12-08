@@ -1,5 +1,12 @@
 import BaseDefinition from './Base';
-import { findStorageWithSpace, getStructures, findStorageWithExcess, sortByRange } from '../utilities';
+import {
+  findStorageWithSpace,
+  findStorageWithExcess,
+  getStructures,
+  sortByRange,
+  getTotalEnergyForSpawn,
+  getEnergyCapacityForSpawn,
+} from '../utilities';
 import { countRequiredCreepsForTasks } from '../unitCoordinator';
 
 const CreepDefinition = {
@@ -13,6 +20,14 @@ const CreepDefinition = {
       countRequiredCreepsForTasks(room, 'tower')
     );
     return (stillNeeded + (room.roles[CreepDefinition.name] || []).length);
+  },
+
+  getSpawningCreepParts: roomName => {
+    const energyCapacity = getEnergyCapacityForSpawn(roomName);
+    if (energyCapacity < 500) {
+      return [WORK, CARRY, MOVE];
+    }
+    return [CARRY, CARRY, CARRY, CARRY, MOVE, MOVE];
   },
 
   run: creep => {
@@ -31,7 +46,9 @@ const CreepDefinition = {
     const creepMem = creep.memory;
     const task = creep.room.memory.coordinator[creepMem.task];
 
-    if (creep.carry[RESOURCE_ENERGY] === creep.getCarryCapacity() && creepMem.action !== 'deposit') {
+    const supportedActions = ['deposit', 'pickup'];
+    if (!supportedActions.includes(creepMem.action)) { creepMem.action = 'pickup'; }
+    if (creep.carry[RESOURCE_ENERGY] === creep.getCarryCapacity() && creepMem.action === 'pickup') {
       creepMem.action = 'deposit';
     } else if (creep.carry[RESOURCE_ENERGY] === 0) {
       creepMem.action = 'pickup';
@@ -63,7 +80,8 @@ const CreepDefinition = {
   runFillTower: creep => {
     const creepMem = creep.memory;
 
-
+    const supportedActions = ['deposit', 'pickup'];
+    if (!supportedActions.includes(creepMem.action)) { creepMem.action = 'pickup'; }
     if (creep.carry[RESOURCE_ENERGY] === creep.getCarryCapacity() && creepMem.action === 'pickup') {
       creepMem.action = 'deposit';
     } else if (creep.carry[RESOURCE_ENERGY] === 0) {

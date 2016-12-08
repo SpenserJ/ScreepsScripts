@@ -9,6 +9,10 @@ const CreepDefinition = {
     return 0;
   },
 
+  getSpawningCreepParts: roomName => {
+    return [WORK, CARRY, MOVE];
+  },
+
   checkTask: creep => {
     let task = creep.memory.task && creep.room.memory.coordinator[creep.memory.task];
     if (!task) {

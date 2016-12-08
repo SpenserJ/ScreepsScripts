@@ -53,12 +53,13 @@ const trueLoop = () => {
   Object.entries(unitTypeToSpawn).forEach(([roomName, spawnClass]) => {
     if (spawnClass === false) { return; }
     getStructures(roomName, 'spawn').forEach(spawn => {
+      // TODO: This is going to spawn multiple of the same creep if there are multiple spawns in the room.
       const spawnRaw = Game.getObjectById(spawn.id);
       if (spawnRaw.spawning) { return; }
 
       const newName = spawnRaw.createCreep(
         //ClassType.decideCreepParts(ClassType),
-        [WORK, CARRY, MOVE],
+        Roles[spawnClass].getSpawningCreepParts(roomName),
         uid(),
         { role: spawnClass, originalRole: spawnClass, originalRoom: roomName }
       );
