@@ -22,7 +22,11 @@ const Roles = {
   Upgrader: require('./Units/Upgrader').default,
   Builder: require('./Units/Builder').default,
   Hauler: require('./Units/Hauler').default,
-}
+};
+
+const Structures = {
+  Tower: require('./Structures/Tower').default,
+};
 
 const trueLoop = () => {
   updateCache();
@@ -80,8 +84,17 @@ const trueLoop = () => {
     }
   }
 
+  Object.entries(Game.rooms).forEach(([roomName, room]) => {
+    const towers = getStructures(roomName, STRUCTURE_TOWER)
+      .forEach(tower => {
+        Structures.Tower.run(Game.getObjectById(tower.id));
+      })
+  })
+
   Object.values(Game.creeps).forEach(creep => {
-    Roles[creep.memory.role].run(creep);
+    const role = Roles[creep.memory.role];
+    role.checkTask(creep);
+    role.run(creep);
   })
 
   debounceByInterval(() => {

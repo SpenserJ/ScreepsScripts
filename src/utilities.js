@@ -57,7 +57,7 @@ export const getStructures = (roomProvided, types) => {
 }
 export const sortByRange = creep => (a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y);
 export const findStorageWithExcess = (room, amount = CARRY_CAPACITY * 5, includeSpawnable = false) =>
-  getStructures(room, includeSpawnable ? [STRUCTURE_CONTAINER, STRUCTURE_STORAGE] : null)
+  getStructures(room, includeSpawnable ? storageStructures : [STRUCTURE_CONTAINER, STRUCTURE_STORAGE])
     .filter(s => (s.store ? s.store[RESOURCE_ENERGY] : s.energy) >= amount);
 ;
 

@@ -1,6 +1,6 @@
 import BaseDefinition from './Base';
-import { findStorageWithSpace, sortByRange } from '../utilities';
-import { getTask, countRequiredCreepsForTasks } from '../unitCoordinator';
+import { findStorageWithSpace, getStructures, findStorageWithExcess, sortByRange } from '../utilities';
+import { countRequiredCreepsForTasks } from '../unitCoordinator';
 
 const CreepDefinition = {
   ...BaseDefinition,
@@ -8,48 +8,30 @@ const CreepDefinition = {
   name: 'Hauler',
 
   requiredUnits: room => {
-    const stillNeeded = countRequiredCreepsForTasks(room, 'haul');
-    return Math.min(4, (stillNeeded + (room.roles[CreepDefinition.name] || []).length));
+    const stillNeeded = (
+      countRequiredCreepsForTasks(room, 'haul') +
+      countRequiredCreepsForTasks(room, 'tower')
+    );
+    return (stillNeeded + (room.roles[CreepDefinition.name] || []).length);
   },
 
   run: creep => {
-    let task = creep.memory.task && creep.room.memory.coordinator[creep.memory.task];
-    if (!task) {
-      if (getTask(creep) === false) { return; }
-      task = creep.room.memory.coordinator[creep.memory.task];
-    }
+    const task = creep.memory.task && creep.room.memory.coordinator[creep.memory.task];
+    if (!task) { return; }
 
     if (task.task.action === 'haul') {
       return CreepDefinition.runHaulFromSources(creep);
+    } else if (task.task.action === 'tower') {
+      return CreepDefinition.runFillTower(creep);
     }
-    console.log('Do what now?');
-    return;
-
-    if (creep.memory.building) {
-      const target = Game.getObjectById(task.task.id);
-      if (!target) {
-        // Construction must be complete.
-        delete creep.memory.task;
-        return;
-      }
-      if (creep.build(target) == ERR_NOT_IN_RANGE) {
-        creep.moveTo(target, { reusePath: 5 });
-      }
-      return true;
-    } else {
-      const targets = findStorageWithExcess(creep.room, creep.getCarryCapacity() * 5, true)
-        .sort(sortByRange(creep));
-      if (targets.length === 0) { console.log('No storage to pull from'); return; }
-
-      creep.withdrawEnergy(Game.getObjectById(targets[0].id));
-    }
+    console.log(CreepDefinition.name, 'isn\'t sure what to do');
   },
 
   runHaulFromSources: creep => {
     const creepMem = creep.memory;
     const task = creep.room.memory.coordinator[creepMem.task];
 
-    if (creep.carry[RESOURCE_ENERGY] === creep.getCarryCapacity() && creepMem.action === 'pickup') {
+    if (creep.carry[RESOURCE_ENERGY] === creep.getCarryCapacity() && creepMem.action !== 'deposit') {
       creepMem.action = 'deposit';
     } else if (creep.carry[RESOURCE_ENERGY] === 0) {
       creepMem.action = 'pickup';
@@ -75,6 +57,38 @@ const CreepDefinition = {
     } else {
       // Go pick up a load
       creep.withdrawEnergy(Game.getObjectById(task.task.id));
+    }
+  },
+
+  runFillTower: creep => {
+    const creepMem = creep.memory;
+
+
+    if (creep.carry[RESOURCE_ENERGY] === creep.getCarryCapacity() && creepMem.action === 'pickup') {
+      creepMem.action = 'deposit';
+    } else if (creep.carry[RESOURCE_ENERGY] === 0) {
+      creepMem.action = 'pickup';
+    }
+
+    if (creepMem.action === 'deposit') {
+      // Move back to base
+      const towers = getStructures(creep.room, STRUCTURE_TOWER)
+        .filter(tower => tower.energy < tower.energyCapacity)
+        .sort(sortByRange(creep));
+      if (towers.length === 0) { return false; }
+      creep.storeEnergy(Game.getObjectById(towers[0].id));
+    } else {
+      // Go pick up a load
+      let containers = findStorageWithExcess(creep.room, creep.getCarryCapacity())
+        .sort(sortByRange(creep));
+      // If there are no containers, check spawn storage
+      if (containers.length === 0) {
+        console.log('Grabbing from spawn :(');
+        containers = findStorageWithExcess(creep.room, creep.getCarryCapacity() * 2, true)
+          .sort(sortByRange(creep));
+      }
+      if (containers.length === 0) { return false; }
+      creep.withdrawEnergy(Game.getObjectById(containers[0].id));
     }
   },
 };

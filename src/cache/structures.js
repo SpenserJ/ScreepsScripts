@@ -27,9 +27,14 @@ export default room => {
     if (rescan.length !== 0) {
       console.log('Rescanning', rescan.length, 'stale structures');
       rescan.forEach(id => {
+        const obj = Game.getObjectById(id);
+        if (!obj) {
+          delete roomMem.structures[id];
+          return;
+        }
         Object.assign(
           roomMem.structures[id],
-          updateStructureStats(Game.getObjectById(id))
+          updateStructureStats(obj)
         );
       });
       roomMem.structuresNeedingRecheck = [];

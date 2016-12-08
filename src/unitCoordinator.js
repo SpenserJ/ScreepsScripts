@@ -51,6 +51,11 @@ export const createTask = (room, task) => {
   };
 };
 
+export const deleteTask = (room, task) => {
+  const taskID = task.id || task;
+  delete (room.coordinator || room.memory.coordinator)[taskID];
+}
+
 export const initializeCoordinator = () => {
   Object.entries(Memory.rooms).forEach(([roomName, roomMem]) => {
     const room = Game.rooms[roomName];

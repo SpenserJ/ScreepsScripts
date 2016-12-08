@@ -10,6 +10,16 @@ const calculateDistance = (pos, pos2) => {
 
 export default (roomName, roomMem) => {
   const room = Game.rooms[roomName];
+
+  // Clear out dead tasks
+  Object.entries(room.memory.coordinator)
+    .filter(([taskId, task]) => task.task.action === 'haul' && task.reference.goal === 'empty')
+    .forEach(([taskId, task]) => {
+      if (!Game.getObjectById(task.task.id)) {
+        delete room.memory.coordinator[taskId];
+      }
+    });
+
   // Find all sources that don't have a container near them.
   Object.values(roomMem.sources)
     .forEach(source => {
@@ -25,7 +35,7 @@ export default (roomName, roomMem) => {
               role: 'Hauler',
               id: container,
             },
-            required: 1,
+            required: 2,
           });
         });
         return;

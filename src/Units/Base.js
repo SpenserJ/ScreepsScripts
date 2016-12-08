@@ -1,11 +1,20 @@
 import { sum } from '../utilities';
 import { appendToTickStat } from '../statistics';
+import { getTask } from '../unitCoordinator';
 
 const CreepDefinition = {
   name: 'BaseUnit',
 
   requiredUnits: room => {
     return 0;
+  },
+
+  checkTask: creep => {
+    let task = creep.memory.task && creep.room.memory.coordinator[creep.memory.task];
+    if (!task) {
+      delete creep.memory.task;
+      if (getTask(creep) === false) { return; }
+    }
   },
 
   run: creep => {
