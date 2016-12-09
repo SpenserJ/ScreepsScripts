@@ -1,6 +1,6 @@
 import { sum } from '../utilities';
 import { appendToTickStat } from '../statistics';
-import { getTask, deleteTask } from '../unitCoordinator';
+import { requestTask, deleteTask } from '../unitCoordinator';
 
 const CreepDefinition = {
   name: 'BaseUnit',
@@ -18,7 +18,7 @@ const CreepDefinition = {
     if (!task) {
       deleteTask(creep.memory.task);
       delete creep.memory.task;
-      if (getTask(creep) === false) { return; }
+      if (requestTask(creep) === false) { return; }
     }
   },
 

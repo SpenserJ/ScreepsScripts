@@ -1,7 +1,4 @@
 //import BaseDefinition from './Base';
-import { findStorageWithExcess, sortByRange } from '../utilities';
-import { getTask, countRequiredCreepsForTasks } from '../unitCoordinator';
-
 const StructureDefinition = {
   /*
   ...BaseDefinition,

@@ -12,6 +12,7 @@ import { debounceByInterval, getStructures, uid } from './utilities';
 import { report as reportStatistics } from './statistics';
 import { initializeCoordinator } from './unitCoordinator';
 import roomPlanner from './roomPlanner/';
+import { runHook } from './hooks';
 
 // Helper scripts that I may want to use/modify/improve
 import './potentialHelpers/roomStatus';
@@ -36,6 +37,9 @@ const trueLoop = () => {
 
   // Logic goes here
 
+  runHook('loop.initialize');
+
+  runHook('spawnCheck.before');
   let unitTypeToSpawn = {};
   Object.entries(Memory.rooms).forEach(([roomName, room]) => {
     const roomMem = room.cache;
@@ -49,7 +53,9 @@ const trueLoop = () => {
       }
     });
   });
+  runHook('spawnCheck.after');
 
+  runHook('spawn.before');
   Object.entries(unitTypeToSpawn).forEach(([roomName, spawnClass]) => {
     if (spawnClass === false) { return; }
     getStructures(roomName, 'spawn').forEach(spawn => {
@@ -68,8 +74,8 @@ const trueLoop = () => {
       console.log(`Spawning new ${spawnClass} with ??? energy: ${newName}`);
     });
   });
+  runHook('spawn.after');
 
-  initializeCoordinator();
   roomPlanner();
 
   // Remove old creeps.
@@ -77,30 +83,30 @@ const trueLoop = () => {
     if(!Game.creeps[name]) {
       const creepMem = Memory.creeps[name];
       const roomMem = Memory.rooms[creepMem.originalRoom];
-      // Remove any task assignments that the creeps had.
-      if (roomMem) {
-        if (creepMem.task && roomMem.coordinator[creepMem.task]) {
-          roomMem.coordinator[creepMem.task].allocated--;
-        }
-      }
+      runHook('creep.garbageCollect', creepMem, roomMem, name);
       delete Memory.creeps[name];
       console.log('Clearing non-existing creep memory:', name);
     }
   }
 
+  runHook('structures.before');
   Object.entries(Game.rooms).forEach(([roomName, room]) => {
     const towers = getStructures(roomName, STRUCTURE_TOWER)
       .forEach(tower => {
         Structures.Tower.run(Game.getObjectById(tower.id));
-      })
-  })
+      });
+  });
+  runHook('structures.after');
 
+  runHook('creeps.before');
   Object.values(Game.creeps).forEach(creep => {
     const role = Roles[creep.memory.role];
     role.checkTask(creep);
     role.run(creep);
-  })
+  });
+  runHook('creeps.after');
 
+  runHook('loop.end');
   debounceByInterval(() => {
     /*
     log('roles.usage', RoleUsage.unitsByRole);

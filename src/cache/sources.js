@@ -17,6 +17,10 @@ export default room => {
       // Check for how many spots are walkable around the source.
       source.workSpots = countWorkSpots(room, source.pos);
       source.nearbyContainers = findNearbyContainers(room, source.pos, 2);
+      source.nearbyContainers.forEach(id => {
+        const container = roomMem.structures[id];
+        container.sourceStorage = true;
+      })
 
       sources[sourceRaw.id] = source;
     });

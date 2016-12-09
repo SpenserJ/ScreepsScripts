@@ -1,6 +1,6 @@
 import BaseDefinition from './Base';
 import { findStorageWithExcess, sortByRange } from '../utilities';
-import { getTask, deleteTask, countRequiredCreepsForTasks } from '../unitCoordinator';
+import { deleteTask, countRequiredCreepsForTasks } from '../unitCoordinator';
 
 const CreepDefinition = {
   ...BaseDefinition,

@@ -1,4 +1,20 @@
 import { uid } from './utilities';
+import { addHook } from './hooks';
+
+addHook('creep.garbageCollect', (creepMem, roomMem) => {
+  const task = getTask(roomMem, creepMem.task);
+  if (!task) { return; }
+  task.allocated = Math.max(task.allocated - 1, 0);
+});
+
+addHook('loop.initialize', () => {
+  initializeCoordinator();
+  Object.values(Game.creeps).forEach(creep => {
+    if (!creep.memory.task) { return; }
+    const task = getTask(creep.room, creep.memory.task);
+    if (!task) { delete creep.memory.task; }
+  });
+});
 
 export const taskExists = (room, reference = {}) => {
   const referenceKeyCount = Object.keys(reference).length;
@@ -21,8 +37,10 @@ export const taskExists = (room, reference = {}) => {
   return (task.length === 0) ? false : task[0];
 };
 
+export const getTask = (room, taskID) =>
+  ((room.coordinator || room.memory.coordinator)[taskID] || false);
 
-export const getTask = (creep) => {
+export const requestTask = (creep) => {
   const { role, originalRole } = creep.memory;
 
   const task = Object.values(creep.room.memory.coordinator)
@@ -74,8 +92,6 @@ export const initializeCoordinator = () => {
       }
     })
   });
-
-
 };
 
 export const countRequiredCreepsForTasks = (roomRaw, taskAction) => {

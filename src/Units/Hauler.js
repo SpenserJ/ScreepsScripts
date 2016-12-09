@@ -64,7 +64,7 @@ const CreepDefinition = {
       }
 
       const storage = findStorageWithSpace(creep.room)
-        .filter(s => s.id !== task.task.id)
+        .filter(s => !s.sourceStorage && s.id !== task.task.id)
         .sort(sortByRange(creep));
       if (storage.length === 0) {
         console.log('Nowhere to store these resources');
