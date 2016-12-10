@@ -8,8 +8,8 @@ if (profilerEnabled) { profiler.enable(); }
 
 import { log, logBatched } from './ScreepsCommander';
 import { updateCache } from './cache/';
-import { debounceByInterval, getStructures, uid } from './utilities';
-import { report as reportStatistics } from './statistics';
+import { debounceByInterval, getStructures, uid, calculateCreepCost } from './utilities';
+import { report as reportStatistics, appendToTickStat } from './statistics';
 import { initializeCoordinator } from './unitCoordinator';
 import roomPlanner from './roomPlanner/';
 import { runHook } from './hooks';
@@ -67,15 +67,20 @@ const trueLoop = () => {
       const spawnRaw = Game.getObjectById(spawn.id);
       if (spawnRaw.spawning) { return; }
 
+      const creepParts = Roles[spawnClass].getSpawningCreepParts(roomName);
       const newName = spawnRaw.createCreep(
         //ClassType.decideCreepParts(ClassType),
-        Roles[spawnClass].getSpawningCreepParts(roomName),
+        creepParts,
         uid(),
         { role: spawnClass, originalRole: spawnClass, originalRoom: roomName }
       );
-      //const creepCost = calculateCreepCost(ClassType.decideCreepParts(ClassType))
-      //appendToTickStat('energyUsage', creepCost);
-      console.log(`Spawning new ${spawnClass} with ??? energy: ${newName}`);
+      const creepCost = calculateCreepCost(creepParts);
+      if (newName < 0) {
+        console.log('Spawning creep with', creepCost, 'energy failed:', newName);
+        return;
+      }
+      appendToTickStat('energyUsage', creepCost);
+      console.log(`Spawning new ${spawnClass} with ${creepCost} energy: ${newName}`);
     });
   });
   runHook('spawn.after');

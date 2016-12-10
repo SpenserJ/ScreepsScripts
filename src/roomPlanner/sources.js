@@ -17,6 +17,20 @@ export default (roomName, roomMem) => {
   // Find all sources that don't have a container near them.
   Object.values(roomMem.sources)
     .forEach(source => {
+      const harvesterTaskReference = { id: source.id, goal: 'harvest' };
+      if (!taskExists(room, harvesterTaskReference)) {
+        createTask(room, {
+          reference: harvesterTaskReference,
+          task: {
+            action: 'harvest',
+            role: 'Harvester',
+            id: source.id,
+          },
+          required: source.workSpots,
+        });
+      }
+
+      // If there are nearby containers, make sure there is a task for hauling.
       if (source.nearbyContainers.length !== 0) {
         // If the container exists, make sure we have a task for hauling from it.
         source.nearbyContainers.forEach(container => {

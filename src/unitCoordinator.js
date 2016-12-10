@@ -2,12 +2,13 @@ import { uid } from './utilities';
 import { addHook } from './hooks';
 
 addHook('creep.garbageCollect', (creepMem, roomMem) => {
+  if (!roomMem) { return; }
   const task = getTask(roomMem, creepMem.task);
   if (!task) { return; }
   task.allocated = Math.max(task.allocated - 1, 0);
 });
 
-addHook('loop.initialize', () => {
+addHook('cache.before', () => {
   initializeCoordinator();
   Object.values(Game.creeps).forEach(creep => {
     if (!creep.memory.task) { return; }

@@ -5,8 +5,6 @@ export const getSpawn = room => {
 };
 
 
-export const calculateCreepCost = body =>
-  body.reduce((acc, part) => (acc + BODYPART_COST[part]), 0);
 
 export const structuresNeedingRepair = room => getRoom(room)
   .find(FIND_STRUCTURES, {
@@ -69,6 +67,8 @@ export const calculateDistance = (pos, pos2) => {
   const { x: x2, y: y2 } = pos2;
   return Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
 }
+export const calculateCreepCost = body =>
+  body.reduce((acc, part) => (acc + BODYPART_COST[part]), 0);
 
 export const debounceByInterval = (func, interval = 5) => {
   if (Game.time % interval === 0) { func(); }
