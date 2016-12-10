@@ -29,8 +29,12 @@ const Structures = {
   Tower: require('./Structures/Tower').default,
 };
 
+runHook('script.initialize');
+
 const trueLoop = () => {
+  runHook('cache.before');
   updateCache();
+  runHook('cache.after');
 
   // TODO: Disable this once I trust it
   PathFinder.use(false);

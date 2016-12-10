@@ -8,6 +8,14 @@ import cacheController from './controller';
 import cacheCreeps from './creeps';
 
 import { cacheLifetime } from '../config';
+import { addHook } from '../hooks';
+
+addHook('script.initialize', () => {
+  Object.values(Memory.rooms).forEach(roomMem => {
+    delete roomMem.cache;
+  });
+  Memory.lastCacheRebuild = 1;
+})
 
 export const updateCache = () => {
   if (typeof Memory.lastCacheRebuild === 'undefined') { Memory.lastCacheRebuild = 1; }
