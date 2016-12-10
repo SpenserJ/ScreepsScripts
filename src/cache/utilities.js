@@ -65,7 +65,9 @@ export const findNearbyContainers = (room, pos, range = 1) => {
 }
 
 export const updateStructureStats = structureRaw => {
-  const structure = {};
+  const structure = {
+    isActive: structureRaw.isActive(),
+  };
   if (typeof structureRaw.energy !== 'undefined') {
     structure.energy = structureRaw.energy;
     structure.energyCapacity = structureRaw.energyCapacity;

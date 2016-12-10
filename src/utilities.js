@@ -47,12 +47,15 @@ export const findStorageWithSpace = (room, storageType = storageStructures) => g
 // NEW HELPERS!
 export const getRoomMemory = room => Memory.rooms[room.name || room].cache;
 export const getRoomStructureById = (room, id) => getRoomMemory(room).structures[id];
-export const getStructures = (roomProvided, types) => {
+export const getStructures = (roomProvided, types, onlyActive = false) => {
   const room = getRoomMemory(roomProvided);
-  return (typeof types === 'undefined' || types === null)
+  const structures = (typeof types === 'undefined' || types === null)
     ? Object.values(room.structures)
     : [].concat(types)
       .reduce((acc, next) => acc.concat((room.structureTypes[next] || []).map(id => room.structures[id])), []);
+  return !onlyActive
+    ? structures
+    : strucutres.filter(s => s.isActive);
 }
 export const sortByRange = creep => (a, b) => creep.pos.getRangeTo(a.pos.x, a.pos.y) - creep.pos.getRangeTo(b.pos.x, b.pos.y);
 export const findStorageWithExcess = (room, amount = CARRY_CAPACITY * 5, includeSpawnable = false) =>
