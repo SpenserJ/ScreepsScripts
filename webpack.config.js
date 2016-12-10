@@ -8,12 +8,13 @@ module.exports = {
     libraryTarget: 'commonjs2',
   },
   plugins: [
+    /*
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false
       },
       mangle: false,
-    }),
+    }),*/
   ],
   externals: {
     "lodash": "_",
