@@ -63,6 +63,13 @@ export const findStorageWithExcess = (room, amount = CARRY_CAPACITY * 5, include
 ;
 
 export const sum = arr => arr.reduce((acc, next) => (acc + next), 0);
+
+export const calculateDistance = (pos, pos2) => {
+  const { x, y } = pos;
+  const { x: x2, y: y2 } = pos2;
+  return Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
+}
+
 export const debounceByInterval = (func, interval = 5) => {
   if (Game.time % interval === 0) { func(); }
 }

@@ -73,6 +73,7 @@ Creep.prototype.changeRole = function changeRole(newRole) {
   roomMem.roles[creepMem.role] = (roomMem.roles[creepMem.role] || []).filter(id => !creep.id);
   // Set the creep's new role.
   creepMem.role = newRole;
+  if (!roomMem.roles[newRole]) { roomMem.roles[newRole] = []; }
   roomMem.roles[newRole].push(creep.id);
 };
 

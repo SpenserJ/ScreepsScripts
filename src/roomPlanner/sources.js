@@ -1,12 +1,6 @@
 import { findWorkSpots } from '../cache/utilities';
-import { sum } from '../utilities';
+import { sum, calculateDistance } from '../utilities';
 import { createTask, taskExists } from '../unitCoordinator';
-
-const calculateDistance = (pos, pos2) => {
-  const { x, y } = pos;
-  const { x: x2, y: y2 } = pos2;
-  return Math.sqrt(Math.pow(x2 - x, 2) + Math.pow(y2 - y, 2));
-}
 
 export default (roomName, roomMem) => {
   const room = Game.rooms[roomName];
