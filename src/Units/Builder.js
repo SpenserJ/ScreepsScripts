@@ -69,7 +69,6 @@ const CreepDefinition = {
           break;
         }
       }
-      console.log(JSON.stringify(target));
       if (!target) {
         // Construction must be complete.
         deleteTask(creep.memory.task);
